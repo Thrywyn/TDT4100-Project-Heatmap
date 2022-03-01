@@ -1,4 +1,4 @@
-package eHeatmap;
+package Heatmap;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class eHeatmapApp extends Application {
+public class HeatmapApp extends Application {
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -15,7 +15,7 @@ public class eHeatmapApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        primaryStage.setTitle("Example App");
+        primaryStage.setTitle("Onward Heatmap");
         primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("App.fxml"))));
         primaryStage.show();
     }
