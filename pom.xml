@@ -19,12 +19,12 @@
 			<version>17-ea+8</version>
 		</dependency>
 
+		<!-- Charts Library -->
 		<dependency>
 			<groupId>eu.hansolo.fx</groupId>
 			<artifactId>charts</artifactId>
 			<version>17.1.2</version>
 		</dependency>
-
 
 		<!-- JUnit 5 -->
 		<dependency>
