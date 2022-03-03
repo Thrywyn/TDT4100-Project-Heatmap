@@ -18,7 +18,8 @@ public class Map implements ChoiceBoxToStringInterface {
     private double width;
     private double height;
 
-    ArrayList<Point> points = new ArrayList<Point>();
+    ArrayList<DefencePoint> defencePoints = new ArrayList<>();
+    ArrayList<ObjectivePoint> objectivePoints = new ArrayList<>();
 
     public Map(String name, String imgName) {
         this.name = name;
@@ -75,12 +76,12 @@ public class Map implements ChoiceBoxToStringInterface {
         this.height = height;
     }
 
-    public ArrayList<Point> getPoints() {
-        return points;
+    public ArrayList<DefencePoint> getDefencePoints() {
+        return defencePoints;
     }
 
-    public void setPoints(ArrayList<Point> points) {
-        this.points = points;
+    public ArrayList<ObjectivePoint> getObjectivePoints() {
+        return objectivePoints;
     }
 
     @Override
