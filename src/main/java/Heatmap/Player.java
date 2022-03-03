@@ -2,13 +2,19 @@ package Heatmap;
 
 import java.util.ArrayList;
 
-public class Player {
+public class Player implements ChoiceBoxToStringInterface {
 
-    ArrayList<Point> points = new ArrayList<Point>();
+    private ArrayList<Point> points = new ArrayList<Point>();
 
-    public Player(){
-        
+    private String name;
 
+    public Player() {
+
+    }
+
+    @Override
+    public String getChoiceBoxString() {
+        return name;
     }
 
 }

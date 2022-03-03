@@ -6,10 +6,11 @@ import java.util.ArrayList;
 
 import javafx.scene.image.Image;
 
-public class Map {
+public class Map implements ChoiceBoxToStringInterface {
 
     private String name;
-    private String path;
+    private String imgName;
+    private String defaultPathPrefix = "src/main/resources/Heatmap/";
 
     private FileInputStream inputStream;
     private Image image;
@@ -19,11 +20,11 @@ public class Map {
 
     ArrayList<Point> points = new ArrayList<Point>();
 
-    public Map(String name, String path) {
+    public Map(String name, String imgName) {
         this.name = name;
-        this.path = path;
+        this.imgName = imgName;
         try {
-            this.inputStream = new FileInputStream(path);
+            this.inputStream = new FileInputStream(defaultPathPrefix + imgName);
             this.image = new Image(inputStream);
             this.width = image.getWidth();
             this.height = image.getHeight();
@@ -42,12 +43,12 @@ public class Map {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public String getImgName() {
+        return imgName;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setImgName(String imgName) {
+        this.imgName = imgName;
     }
 
     public Image getImage() {
@@ -58,7 +59,7 @@ public class Map {
         this.image = image;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
@@ -66,7 +67,7 @@ public class Map {
         this.width = width;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
@@ -80,6 +81,21 @@ public class Map {
 
     public void setPoints(ArrayList<Point> points) {
         this.points = points;
+    }
+
+    @Override
+    public String toString() {
+        return "Map [name=" + name + ", height=" + height + ", width=" + width + "]";
+    }
+
+    public static void main(String[] args) {
+        Map bazaar = new Map("Bazaar", "bazaar.jpg");
+        System.out.println(bazaar);
+    }
+
+    @Override
+    public String getChoiceBoxString() {
+        return name;
     }
 
 }
