@@ -2,10 +2,11 @@ package Heatmap;
 
 import java.util.ArrayList;
 
-import javafx.collections.ObservableList;
-import javafx.css.Match;
+import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
@@ -13,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class HeatmapController {
 
@@ -37,6 +39,10 @@ public class HeatmapController {
     private Text clickXYText;
     @FXML
     private Canvas imageDispleyCanvas;
+    @FXML
+    private Text imageHeightText;
+    @FXML
+    private Text imageWidthText;
 
     private Heatmap heatmap = new Heatmap();
 
@@ -45,16 +51,32 @@ public class HeatmapController {
     private String mouseXString;
     private String mouseYString;
 
+    private Double relativeMouseX;
+    private Double relativeMouseY;
+
+    private String relativeMouseXString;
+    private String relativeMouseYString;
+
+    Scene scene;
+    Stage stage;
+
     @FXML
     public void initialize() {
+
         setDefaultImage();
         setImageEvents();
         fillChoiceBoxes();
+
         System.out.println("Setup finished");
     }
 
     private void setDefaultImage() {
         imageDisplay.setImage(new Image(getClass().getResource("bazaar.jpg").toExternalForm()));
+    }
+
+    private void updateImageInformation() {
+        imageWidthText.setText("Width:" + Double.toString(imageDisplay.getFitWidth()));
+        imageHeightText.setText("Hegight: " + Double.toString(imageDisplay.getFitHeight()));
     }
 
     private void setImageEvents() {
@@ -67,10 +89,24 @@ public class HeatmapController {
                 mouseXString = Double.toString(mouseX);
                 mouseYString = Double.toString(mouseY);
 
-                clickXYText.setText("Click x,y :    (" + mouseXString + "," + mouseYString + ")");
+                Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
+                Double imageX = boundsInScene.getMinX();
+                Double imageY = boundsInScene.getMinY();
+
+                relativeMouseX = mouseX - imageX;
+                relativeMouseY = mouseY - imageY;
+
+                relativeMouseXString = Double.toString(relativeMouseX);
+                relativeMouseYString = Double.toString(relativeMouseY);
+
+                clickXYText.setText("Click x,y :    (" + relativeMouseXString + "," + relativeMouseYString + ")");
+
                 System.out.println(event.getSource().toString());
                 System.out.println("SceneX:" + Double.toString(event.getSceneX()));
                 System.out.println("ScreenX:" + Double.toString(event.getScreenX()));
+
+                System.out.println("MinX:" + Double.toString(boundsInScene.getMinX()) + "\t Min Y: "
+                        + Double.toString(boundsInScene.getMinY()));
 
             }
         });
@@ -84,9 +120,45 @@ public class HeatmapController {
                 mouseXString = Double.toString(mouseX);
                 mouseYString = Double.toString(mouseY);
 
-                mouseXYText.setText("Mouse x,y : (" + mouseXString + "," + mouseYString + ")");
+                Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
+                Double imageX = boundsInScene.getMinX();
+                Double imageY = boundsInScene.getMinY();
+
+                relativeMouseX = mouseX - imageX;
+                relativeMouseY = mouseY - imageY;
+
+                relativeMouseXString = Double.toString(relativeMouseX);
+                relativeMouseYString = Double.toString(relativeMouseY);
+
+                mouseXYText.setText("Mouse x,y : (" + relativeMouseXString + "," + relativeMouseYString + ")");
+
             }
         });
+
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        System.out.println("Stage set");
+    }
+
+    public void setScene() {
+        scene = clickXYText.getScene();
+    }
+
+    public void setStageEvent() {
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            // System.out.println("Window Width:" + stage.getWidth());
+            updateImageInformation();
+        });
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            // System.out.println("Window Height:" + stage.getHeight());
+            updateImageInformation();
+        });
+
+        System.out.println("Stage EventListener Set");
     }
 
     private void fillChoiceBox(ChoiceBox<String> cb, ArrayList<? extends ChoiceBoxToStringInterface> objectArrayList) {

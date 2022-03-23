@@ -22,9 +22,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0"
-    xmlns="http://javafx.com/javafx/17"
-    xmlns:fx="http://javafx.com/fxml/1" fx:controller="Heatmap.HeatmapController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Heatmap.HeatmapController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
@@ -151,15 +149,17 @@
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="126.0" minHeight="10.0" prefHeight="93.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox prefHeight="105.0" prefWidth="600.0">
                             <children>
                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                     <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Image Information:" />
+                              <Text fx:id="imageWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
+                              <Text fx:id="imageHeightText" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mouse Information:" />
                                         <Text id="mouseXYText" fx:id="mouseXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Mouse x,y : (0,0)" />
                                         <Text id="mouseXYText" fx:id="clickXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Click x,y :    (0,0)" />
