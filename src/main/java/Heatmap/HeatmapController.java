@@ -57,6 +57,11 @@ public class HeatmapController {
     private String relativeMouseXString;
     private String relativeMouseYString;
 
+    private Double imageBoundWidth;
+    private Double imageBoundHeight;
+
+    private Image imageNode = new Image(getClass().getResource("bazaar.jpg").toExternalForm());
+
     Scene scene;
     Stage stage;
 
@@ -71,12 +76,17 @@ public class HeatmapController {
     }
 
     private void setDefaultImage() {
-        imageDisplay.setImage(new Image(getClass().getResource("bazaar.jpg").toExternalForm()));
+        imageDisplay.setImage(imageNode);
     }
 
     private void updateImageInformation() {
-        imageWidthText.setText("Width:" + Double.toString(imageDisplay.getFitWidth()));
-        imageHeightText.setText("Hegight: " + Double.toString(imageDisplay.getFitHeight()));
+
+        imageBoundWidth = imageDisplay.boundsInParentProperty().getValue().getWidth();
+        imageBoundHeight = imageDisplay.boundsInParentProperty().getValue().getHeight();
+        System.out.println("Image Width: " + imageBoundWidth + " Height: " + imageBoundHeight);
+
+        imageWidthText.setText("Width:" + Double.toString(imageBoundWidth));
+        imageHeightText.setText("Hegight: " + Double.toString(imageBoundHeight));
     }
 
     private void setImageEvents() {
