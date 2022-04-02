@@ -24,7 +24,9 @@ public class HeatmapApp extends Application {
         HeatmapController controller = (HeatmapController) fxmlLoader.getController();
         primaryStage.setScene(new Scene(root));
         controller.setStage(primaryStage);
+        System.out.println("Stage set");
         controller.addStageSizeEventListeners();
+        controller.addStageListener();
         primaryStage.show();
     }
 

@@ -106,7 +106,7 @@ public class HeatmapController {
 
         // Image
         setDefaultImage();
-        // setImageEvents();
+        addImageEventHandler();
 
         // Canvas
         updateCanvasPaneSize();
@@ -118,24 +118,19 @@ public class HeatmapController {
         setRadioButtonEvents();
 
         //
-        addStageListener();
 
         System.out.println("Setup finished");
     }
 
-    private void addStageListener() {
+    public void addStageListener() {
         stage.maximizedProperty().addListener((ov, oldVal, newVal) -> {
-            @Override
-            public void changed() {
-                System.out.println("test");
-            }
+            updateImageInformation();
+            updateCanvasPaneSize();
+            System.out.println("Maximized property changed");
         });
     }
 
     private void updateCanvasPaneSize() {
-
-        double idpw = imageDisplayPane.getWidth();
-        double idph = imageDisplayPane.getHeight();
 
         double ibw = imageBoundWidth;
         double ibh = imageBoundHeight;
@@ -149,12 +144,12 @@ public class HeatmapController {
         imageDisplayCanvasPane = new CanvasPane(100, 100);
 
         // Debug Code
-        // imageDisplayCanvasPane.setOnMousePressed(new EventHandler<MouseEvent>() {
-        // @Override
-        // public void handle(MouseEvent mouseEvent) {
-        // System.out.println("CanvasPane Clicked!");
-        // }
-        // });
+        imageDisplayCanvasPane.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                System.out.println("CanvasPane Clicked!");
+            }
+        });
 
         stackPaneImageCanvas.getChildren().add(imageDisplayCanvasPane);
         System.out.print("Canvas Pane: ");
@@ -230,6 +225,16 @@ public class HeatmapController {
                 updateSelectedToggleButton();
                 drawCircle(ctx, relativeMouseX, relativeMouseY, 5);
             }
+
+        });
+
+        imageDisplayCanvas.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                // setMouseValues(mouseEvent);
+                updateImageInformation();
+                updateCanvasPaneSize();
+            }
         });
     }
 
@@ -277,7 +282,7 @@ public class HeatmapController {
         imageHeightTextRaw.setText("Hegight: " + Double.toString(imageNode.getHeight()));
     }
 
-    private void setImageEvents() {
+    private void addImageEventHandler() {
         // On Mouse clicked
         imageDisplay.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
@@ -289,24 +294,10 @@ public class HeatmapController {
         // On mouse moved
         imageDisplay.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-                absoluteMouseX = event.getSceneX();
-                absoluteMouseY = event.getSceneY();
-                absoluteMouseXString = Double.toString(absoluteMouseX);
-                absoluteMouseYString = Double.toString(absoluteMouseY);
-
-                Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
-                Double imageX = boundsInScene.getMinX();
-                Double imageY = boundsInScene.getMinY();
-
-                relativeMouseX = absoluteMouseX - imageX;
-                relativeMouseY = absoluteMouseY - imageY;
-
-                relativeMouseXString = Double.toString(relativeMouseX);
-                relativeMouseYString = Double.toString(relativeMouseY);
-
-                mouseXYText.setText("Mouse x,y : (" + relativeMouseXString + "," + relativeMouseYString + ")");
-
+            public void handle(MouseEvent mouseEvent) {
+                // setMouseValues(mouseEvent);
+                updateImageInformation();
+                updateCanvasPaneSize();
             }
         });
 
