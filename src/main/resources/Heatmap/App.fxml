@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ListView?>
@@ -100,13 +99,13 @@
                         <VBox prefHeight="200.0" prefWidth="100.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Point Actions:" />
-                                <RadioButton mnemonicParsing="false" text="New">
+                                <RadioButton fx:id="editingModeNew" mnemonicParsing="false" selected="true" text="New">
                                     <toggleGroup>
                                         <ToggleGroup fx:id="editingMode" />
                                     </toggleGroup>
                                 </RadioButton>
-                                <RadioButton mnemonicParsing="false" text="Move" toggleGroup="$editingMode" />
-                                <RadioButton mnemonicParsing="false" text="Delete" toggleGroup="$editingMode" />
+                                <RadioButton fx:id="editingModeEdit" mnemonicParsing="false" text="Edit" toggleGroup="$editingMode" />
+                                <RadioButton fx:id="editingModeDelete" mnemonicParsing="false" text="Delete" toggleGroup="$editingMode" />
                             </children>
                         </VBox>
                     </children>
@@ -115,12 +114,11 @@
         </HBox>
     </right>
     <center>
-        <Pane id="imageDisplayPane" fx:id="container" minHeight="100.0" minWidth="100.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <Pane id="imageDisplayPane" fx:id="imageDisplayPane" minHeight="100.0" minWidth="100.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <StackPane fitHeight="${container.height}" fitWidth="${container.width}">
+                <StackPane fx:id="stackPaneImageCanvas" fitHeight="${imageDisplayPane.height}" fitWidth="${imageDisplayPane.width}">
                     <children>
-                        <Canvas Height="${container.height}" Width="${container.width}" />
-                        <ImageView id="imageDisplay" fx:id="imageDisplay" cache="true" cacheHint="SPEED" depthTest="ENABLE" fitHeight="${container.height}" fitWidth="${container.width}" managed="false" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" smooth="false" />
+                        <ImageView id="imageDisplay" fx:id="imageDisplay" cache="true" cacheHint="SPEED" depthTest="ENABLE" fitHeight="${imageDisplayPane.height}" fitWidth="${imageDisplayPane.width}" managed="false" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" smooth="false" />
                     </children>
                 </StackPane>
             </children>
@@ -145,21 +143,23 @@
                 <Separator prefWidth="200.0" />
                 <GridPane prefHeight="227.0" prefWidth="1200.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="595.0" minWidth="10.0" prefWidth="192.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1066.0" minWidth="10.0" prefWidth="1008.0" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints maxHeight="126.0" minHeight="10.0" prefHeight="93.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="181.0" minHeight="10.0" prefHeight="116.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
                         <HBox prefHeight="105.0" prefWidth="600.0">
                             <children>
                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                     <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Image Information:" />
-                              <Text fx:id="imageWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
-                              <Text fx:id="imageHeightText" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Raw Image Information:" />
+                                        <Text fx:id="imageWidthTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
+                                        <Text fx:id="imageHeightTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Scaled Image Information:" />
+                                        <Text fx:id="imageWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
+                                        <Text fx:id="imageHeightText" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mouse Information:" />
                                         <Text id="mouseXYText" fx:id="mouseXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Mouse x,y : (0,0)" />
                                         <Text id="mouseXYText" fx:id="clickXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Click x,y :    (0,0)" />

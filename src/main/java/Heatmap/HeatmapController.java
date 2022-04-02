@@ -3,24 +3,32 @@ package Heatmap;
 import java.util.ArrayList;
 
 import javafx.beans.binding.Bindings;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class HeatmapController {
 
+    // FXML Objects
     @FXML
     private ImageView imageDisplay;
-
     @FXML
     private ChoiceBox<String> matchChoiceBox;
     @FXML
@@ -38,41 +46,218 @@ public class HeatmapController {
     @FXML
     private Text clickXYText;
     @FXML
-    private Canvas imageDispleyCanvas;
-    @FXML
     private Text imageHeightText;
     @FXML
     private Text imageWidthText;
+    @FXML
+    private Text imageHeightTextRaw;
+    @FXML
+    private Text imageWidthTextRaw;
+    @FXML
+    private ToggleGroup editingMode;
+    @FXML
+    private Toggle editingModeNew;
+    @FXML
+    private Toggle editingModeEdit;
+    @FXML
+    private Toggle editingModeDelete;
+    @FXML
+    private StackPane stackPaneImageCanvas;
 
+    // Project Objects
     private Heatmap heatmap = new Heatmap();
 
-    private Double mouseX;
-    private Double mouseY;
-    private String mouseXString;
-    private String mouseYString;
+    // Mouse Related Variables
 
+    // Absolute values
+    private Double absoluteMouseX;
+    private Double absoluteMouseY;
+    private String absoluteMouseXString;
+    private String absoluteMouseYString;
+    // Relative values
     private Double relativeMouseX;
     private Double relativeMouseY;
-
     private String relativeMouseXString;
     private String relativeMouseYString;
+    // Image values
+    private Double imageBoundWidth = 0.0;
+    private Double imageBoundHeight = 0.0;
 
-    private Double imageBoundWidth;
-    private Double imageBoundHeight;
+    // Editor State
+    private Toggle selectedToggleButton;
+    private String editorModeString;
 
+    // Canvas Values
+    private CanvasPane imageDisplayCanvasPane;
+    private Canvas imageDisplayCanvas;
+    private GraphicsContext ctx;
+    private double pointRadius = 5;
+
+    // FXML Objects
     private Image imageNode = new Image(getClass().getResource("bazaar.jpg").toExternalForm());
-
-    Scene scene;
-    Stage stage;
+    private Scene scene;
+    private Stage stage;
 
     @FXML
     public void initialize() {
 
+        // StackPane
+        setStackPaneChildren();
+
+        // Image
         setDefaultImage();
-        setImageEvents();
+        // setImageEvents();
+
+        // Canvas
+        updateCanvasPaneSize();
+        setCanvasContext();
+        addCanvasEvents();
+
+        // Editor Settings
         fillChoiceBoxes();
+        setRadioButtonEvents();
+
+        //
+        addStageListener();
 
         System.out.println("Setup finished");
+    }
+
+    private void addStageListener() {
+        stage.maximizedProperty().addListener((ov, oldVal, newVal) -> {
+            @Override
+            public void changed() {
+                System.out.println("test");
+            }
+        });
+    }
+
+    private void updateCanvasPaneSize() {
+
+        double idpw = imageDisplayPane.getWidth();
+        double idph = imageDisplayPane.getHeight();
+
+        double ibw = imageBoundWidth;
+        double ibh = imageBoundHeight;
+
+        imageDisplayCanvasPane.setMinSize(ibw, ibh);
+        imageDisplayCanvasPane.setPrefSize(ibw, ibh);
+        imageDisplayCanvasPane.setMaxSize(ibw, ibh);
+    }
+
+    private void setStackPaneChildren() {
+        imageDisplayCanvasPane = new CanvasPane(100, 100);
+
+        // Debug Code
+        // imageDisplayCanvasPane.setOnMousePressed(new EventHandler<MouseEvent>() {
+        // @Override
+        // public void handle(MouseEvent mouseEvent) {
+        // System.out.println("CanvasPane Clicked!");
+        // }
+        // });
+
+        stackPaneImageCanvas.getChildren().add(imageDisplayCanvasPane);
+        System.out.print("Canvas Pane: ");
+        System.out.println(imageDisplayCanvasPane);
+        imageDisplayCanvas = (Canvas) imageDisplayCanvasPane.getChildren().get(0);
+        System.out.print("Canvas: ");
+        System.out.println(imageDisplayCanvas);
+    }
+
+    private static class CanvasPane extends Pane {
+
+        final Canvas canvas;
+
+        CanvasPane(double width, double height) {
+            setWidth(width);
+            setHeight(height);
+            canvas = new Canvas(width, height);
+            getChildren().add(canvas);
+
+            canvas.widthProperty().bind(this.widthProperty());
+            canvas.heightProperty().bind(this.heightProperty());
+        }
+    }
+
+    private void setCanvasContext() {
+        ctx = imageDisplayCanvas.getGraphicsContext2D();
+        ctx.setFill(Color.RED);
+        ctx.setStroke(Color.RED);
+    }
+
+    private void setMouseValues(MouseEvent mouseEvent) {
+        // Set absolute coordinates
+        absoluteMouseX = mouseEvent.getSceneX();
+        absoluteMouseY = mouseEvent.getSceneY();
+        absoluteMouseXString = Double.toString(absoluteMouseX);
+        absoluteMouseYString = Double.toString(absoluteMouseY);
+        // Get bounds to calculate relative coords
+        Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
+        Double imageX = boundsInScene.getMinX();
+        Double imageY = boundsInScene.getMinY();
+        // Set relative coordinates
+        relativeMouseX = absoluteMouseX - imageX;
+        relativeMouseY = absoluteMouseY - imageY;
+        relativeMouseXString = Double.toString(relativeMouseX);
+        relativeMouseYString = Double.toString(relativeMouseY);
+
+        // Set click text
+        clickXYText.setText("Click x,y :    (" + relativeMouseXString + "," + relativeMouseYString + ")");
+
+        // Sysout values
+        System.out.println("---Mouse Click Event---");
+        System.out.println("Source: " + mouseEvent.getSource().toString());
+        System.out.println("RelativeX: " + Double.toString(relativeMouseX));
+        System.out.println("RelativeY: " + Double.toString(relativeMouseY));
+
+        // System.out.println("MinX:" + Double.toString(boundsInScene.getMinX()) + "\t
+        // Min Y: "
+        // + Double.toString(boundsInScene.getMinY()));
+    }
+
+    private void drawCircle(GraphicsContext ctx, double centerX, double centerY, double radius) {
+        ctx.strokeOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+        ctx.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+        System.out.println("Circle drawn");
+    }
+
+    private void addCanvasEvents() {
+        // On Mouse clicked
+        imageDisplayCanvas.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                setMouseValues(mouseEvent);
+                updateSelectedToggleButton();
+                drawCircle(ctx, relativeMouseX, relativeMouseY, 5);
+            }
+        });
+    }
+
+    private void setRadioButtonEvents() {
+        editingMode.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+            selectedToggleButton = newVal;
+
+            if (selectedToggleButton.equals(editingModeNew)) {
+                editorModeString = "new";
+            } else if (selectedToggleButton.equals(editingModeEdit)) {
+                editorModeString = "edit";
+            } else if (selectedToggleButton.equals(editingModeDelete)) {
+                editorModeString = "delete";
+            }
+
+            System.out.println("Editor Mode: " + editorModeString);
+        });
+    }
+
+    private void updateSelectedToggleButton() {
+        selectedToggleButton = editingMode.getSelectedToggle();
+        if (selectedToggleButton.equals(editingModeNew)) {
+            editorModeString = "new";
+        } else if (selectedToggleButton.equals(editingModeEdit)) {
+            editorModeString = "edit";
+        } else if (selectedToggleButton.equals(editingModeDelete)) {
+            editorModeString = "delete";
+        }
     }
 
     private void setDefaultImage() {
@@ -87,37 +272,17 @@ public class HeatmapController {
 
         imageWidthText.setText("Width:" + Double.toString(imageBoundWidth));
         imageHeightText.setText("Hegight: " + Double.toString(imageBoundHeight));
+
+        imageWidthTextRaw.setText("Width:" + Double.toString(imageNode.getWidth()));
+        imageHeightTextRaw.setText("Hegight: " + Double.toString(imageNode.getHeight()));
     }
 
     private void setImageEvents() {
         // On Mouse clicked
         imageDisplay.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-                mouseX = event.getSceneX();
-                mouseY = event.getSceneY();
-                mouseXString = Double.toString(mouseX);
-                mouseYString = Double.toString(mouseY);
-
-                Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
-                Double imageX = boundsInScene.getMinX();
-                Double imageY = boundsInScene.getMinY();
-
-                relativeMouseX = mouseX - imageX;
-                relativeMouseY = mouseY - imageY;
-
-                relativeMouseXString = Double.toString(relativeMouseX);
-                relativeMouseYString = Double.toString(relativeMouseY);
-
-                clickXYText.setText("Click x,y :    (" + relativeMouseXString + "," + relativeMouseYString + ")");
-
-                System.out.println(event.getSource().toString());
-                System.out.println("SceneX:" + Double.toString(event.getSceneX()));
-                System.out.println("ScreenX:" + Double.toString(event.getScreenX()));
-
-                System.out.println("MinX:" + Double.toString(boundsInScene.getMinX()) + "\t Min Y: "
-                        + Double.toString(boundsInScene.getMinY()));
-
+            public void handle(MouseEvent mouseEvent) {
+                setMouseValues(mouseEvent);
             }
         });
 
@@ -125,17 +290,17 @@ public class HeatmapController {
         imageDisplay.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                mouseX = event.getSceneX();
-                mouseY = event.getSceneY();
-                mouseXString = Double.toString(mouseX);
-                mouseYString = Double.toString(mouseY);
+                absoluteMouseX = event.getSceneX();
+                absoluteMouseY = event.getSceneY();
+                absoluteMouseXString = Double.toString(absoluteMouseX);
+                absoluteMouseYString = Double.toString(absoluteMouseY);
 
                 Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
                 Double imageX = boundsInScene.getMinX();
                 Double imageY = boundsInScene.getMinY();
 
-                relativeMouseX = mouseX - imageX;
-                relativeMouseY = mouseY - imageY;
+                relativeMouseX = absoluteMouseX - imageX;
+                relativeMouseY = absoluteMouseY - imageY;
 
                 relativeMouseXString = Double.toString(relativeMouseX);
                 relativeMouseYString = Double.toString(relativeMouseY);
@@ -147,25 +312,30 @@ public class HeatmapController {
 
     }
 
+    // Sets stage, ran from App
     public void setStage(Stage stage) {
         this.stage = stage;
         System.out.println("Stage set");
     }
 
+    // Sets scene
     public void setScene() {
         scene = clickXYText.getScene();
     }
 
-    public void setStageEvent() {
+    // Sets Stage Event listener to listen for changes in width/height on window
+    public void addStageSizeEventListeners() {
 
         stage.widthProperty().addListener((obs, oldVal, newVal) -> {
             // System.out.println("Window Width:" + stage.getWidth());
             updateImageInformation();
+            updateCanvasPaneSize();
         });
 
         stage.heightProperty().addListener((obs, oldVal, newVal) -> {
             // System.out.println("Window Height:" + stage.getHeight());
             updateImageInformation();
+            updateCanvasPaneSize();
         });
 
         System.out.println("Stage EventListener Set");

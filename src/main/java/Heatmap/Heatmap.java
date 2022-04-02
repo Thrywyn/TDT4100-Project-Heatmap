@@ -49,7 +49,7 @@ public class Heatmap {
     }
 
     private void createObjectives() {
-        
+
     }
 
     public ArrayList<Map> getMaps() {
