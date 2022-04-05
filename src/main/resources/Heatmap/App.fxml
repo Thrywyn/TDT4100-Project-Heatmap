@@ -19,6 +19,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Heatmap.HeatmapController">
@@ -53,42 +54,65 @@
                     <children>
                         <VBox prefHeight="200.0" prefWidth="100.0">
                             <children>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Point Data:" />
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Match Type" />
-                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <children>
-                                        <ChoiceBox fx:id="matchChoiceBox" prefWidth="150.0" />
-                                        <Button mnemonicParsing="false" text="New" />
-                                    </children>
-                                </HBox>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Map" />
-                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <children>
-                                        <ChoiceBox fx:id="mapChoiceBox" prefWidth="150.0" />
-                                        <Button mnemonicParsing="false" text="New" />
-                                    </children>
-                                </HBox>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Team" />
-                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <children>
-                                        <ChoiceBox fx:id="teamChoiceBox" prefWidth="150.0" />
-                                        <Button mnemonicParsing="false" text="New" />
-                                    </children>
-                                </HBox>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective" />
-                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <children>
-                                        <ChoiceBox fx:id="objectiveChoiceBox" prefWidth="150.0" />
-                                        <Button mnemonicParsing="false" text="New" />
-                                    </children>
-                                </HBox>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Player" />
-                                <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <children>
-                                        <ChoiceBox fx:id="playerChoiceBox" prefWidth="150.0" />
-                                        <Button mnemonicParsing="false" text="New" />
-                                    </children>
-                                </HBox>
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Point Data:">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </Text>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Required Fields" underline="true" />
+                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Map" />
+                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                          <children>
+                                              <ChoiceBox fx:id="mapChoiceBox" prefWidth="150.0" />
+                                              <Button mnemonicParsing="false" text="New" />
+                                          </children>
+                                      </HBox>
+                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Team" />
+                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                          <children>
+                                              <ChoiceBox fx:id="teamChoiceBox" prefWidth="150.0" />
+                                              <Button mnemonicParsing="false" text="New" />
+                                          </children>
+                                      </HBox>
+                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective" />
+                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                              <ChoiceBox fx:id="objectiveChoiceBox" prefWidth="150.0" />
+                                              <Button mnemonicParsing="false" text="New" />
+                                 </children>
+                                      </HBox>
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Optional Fields" underline="true" />
+                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Match Type" />
+                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                              <ChoiceBox fx:id="matchChoiceBox" prefWidth="150.0" />
+                                              <Button mnemonicParsing="false" text="New" />
+                                 </children>
+                                      </HBox>
+                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Player" />
+                                      <HBox prefHeight="100.0" prefWidth="200.0">
+                                          <children>
+                                              <ChoiceBox fx:id="playerChoiceBox" prefWidth="150.0" />
+                                              <Button mnemonicParsing="false" text="New" />
+                                          </children>
+                                      </HBox>
+                           </children>
+                        </VBox>
                             </children>
                         </VBox>
                         <Separator prefWidth="200.0">
@@ -161,8 +185,8 @@
                                         <Text fx:id="imageWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
                                         <Text fx:id="imageHeightText" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mouse Information:" />
-                                        <Text id="mouseXYText" fx:id="mouseXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Mouse x,y : (0,0)" />
-                                        <Text id="mouseXYText" fx:id="clickXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Click x,y :    (0,0)" />
+                                        <Text id="mouseXYText" fx:id="clickXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Relative Click x,y :    (0,0)" />
+                              <Text id="mouseXYText" fx:id="clickXYTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Raw Click x,y :    (0,0)" />
                                     </children>
                                     <opaqueInsets>
                                         <Insets />

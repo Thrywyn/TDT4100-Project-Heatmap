@@ -26,4 +26,12 @@ public class Team implements ChoiceBoxToStringInterface {
         return name;
     }
 
+    public Object getName() {
+        return name;
+    }
+
+    public ArrayList<? extends ChoiceBoxToStringInterface> getPlayers() {
+        return players;
+    }
+
 }

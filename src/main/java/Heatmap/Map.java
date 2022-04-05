@@ -9,7 +9,8 @@ import javafx.scene.image.Image;
 public class Map implements ChoiceBoxToStringInterface {
 
     private String name;
-    private String imgName;
+    private String imgFileName;
+
     private String defaultPathPrefix = "src/main/resources/Heatmap/";
 
     private FileInputStream inputStream;
@@ -18,14 +19,14 @@ public class Map implements ChoiceBoxToStringInterface {
     private double width;
     private double height;
 
-    ArrayList<DefencePoint> defencePoints = new ArrayList<>();
+    ArrayList<PlayerDefencePoint> playerDefencePoints = new ArrayList<>();
     ArrayList<ObjectivePoint> objectivePoints = new ArrayList<>();
 
-    public Map(String name, String imgName) {
+    public Map(String name, String imgFileName) {
         this.name = name;
-        this.imgName = imgName;
+        this.imgFileName = imgFileName;
         try {
-            this.inputStream = new FileInputStream(defaultPathPrefix + imgName);
+            this.inputStream = new FileInputStream(defaultPathPrefix + imgFileName);
             this.image = new Image(inputStream);
             this.width = image.getWidth();
             this.height = image.getHeight();
@@ -44,12 +45,12 @@ public class Map implements ChoiceBoxToStringInterface {
         this.name = name;
     }
 
-    public String getImgName() {
-        return imgName;
+    public String getImgFileName() {
+        return imgFileName;
     }
 
-    public void setImgName(String imgName) {
-        this.imgName = imgName;
+    public void setImgFileName(String imgName) {
+        this.imgFileName = imgName;
     }
 
     public Image getImage() {
@@ -76,12 +77,16 @@ public class Map implements ChoiceBoxToStringInterface {
         this.height = height;
     }
 
-    public ArrayList<DefencePoint> getDefencePoints() {
-        return defencePoints;
+    public ArrayList<PlayerDefencePoint> getPlayerDefencePoints() {
+        return playerDefencePoints;
     }
 
     public ArrayList<ObjectivePoint> getObjectivePoints() {
         return objectivePoints;
+    }
+
+    public void addObjectivePoint(ObjectivePoint objectivePoint) {
+        this.objectivePoints.add(objectivePoint);
     }
 
     @Override

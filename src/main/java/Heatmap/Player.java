@@ -8,12 +8,16 @@ public class Player implements ChoiceBoxToStringInterface {
 
     private String name;
 
-    public Player() {
-
+    public Player(String name) {
+        this.name = name;
     }
 
     @Override
     public String getChoiceBoxString() {
+        return name;
+    }
+
+    public String getName() {
         return name;
     }
 

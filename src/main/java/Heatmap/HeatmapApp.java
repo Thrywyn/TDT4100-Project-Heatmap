@@ -26,7 +26,6 @@ public class HeatmapApp extends Application {
         controller.setStage(primaryStage);
         System.out.println("Stage set");
         controller.addStageSizeEventListeners();
-        controller.addStageListener();
         primaryStage.show();
     }
 
