@@ -81,8 +81,30 @@ public class Map implements ChoiceBoxToStringInterface {
         return playerDefencePoints;
     }
 
+    public ArrayList<PlayerDefencePoint> getPlayerDefencePoints(MatchType matchType, Team team, Player player,
+            ObjectivePoint objectivePoint) {
+        // Return all PlayerDefencePoints that match the given parameters, mathcType can
+        // be null, player can be null
+        return playerDefencePoints.stream()
+                .filter(point -> point.getMatchType() == matchType || matchType == null)
+                .filter(point -> point.getTeam() == team)
+                .filter(point -> point.getPlayer() == player || player == null)
+                .filter(point -> point.getObjectivePoint() == objectivePoint)
+                .collect(ArrayList<PlayerDefencePoint>::new, ArrayList::add, ArrayList::addAll);
+    }
+
     public ArrayList<ObjectivePoint> getObjectivePoints() {
         return objectivePoints;
+    }
+
+    public ArrayList<ObjectivePoint> getObjectivePoints(ObjectivePoint obj) {
+        // Return objectivepoint that equals obj, or return list of all objectives
+        if (obj == null) {
+            return objectivePoints;
+        } else {
+            return objectivePoints.stream().filter(point -> point == obj).collect(ArrayList<ObjectivePoint>::new,
+                    ArrayList::add, ArrayList::addAll);
+        }
     }
 
     public void addObjectivePoint(ObjectivePoint objectivePoint) {

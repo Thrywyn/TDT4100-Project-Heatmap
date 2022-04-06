@@ -30,7 +30,7 @@ public class Team implements ChoiceBoxToStringInterface {
         return name;
     }
 
-    public ArrayList<? extends ChoiceBoxToStringInterface> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 

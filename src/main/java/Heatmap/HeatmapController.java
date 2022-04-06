@@ -1,8 +1,12 @@
 package Heatmap;
 
+import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,6 +16,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -64,6 +70,8 @@ public class HeatmapController {
     private StackPane stackPaneImageCanvas;
     @FXML
     private Text clickXYTextRaw;
+    @FXML
+    private ListView<PlayerDefencePoint> pointListView;
 
     // Project Objects
     private Heatmap heatmap = new Heatmap();
@@ -97,10 +105,10 @@ public class HeatmapController {
     private Canvas imageDisplayCanvas;
     private GraphicsContext ctx;
     // Player Points
-    private double playerPointRadius = 5;
+    private double playerPointRadius = 10;
     private Color playerPointColor = Color.rgb(255, 0, 0, 0.5);
     // Objective Points
-    private double objectivePointRadius = 10;
+    private double objectivePointRadius = 20;
     private Color objectivePointColor = Color.rgb(0, 0, 255, 0.5);
 
     // FXML Objects
@@ -129,11 +137,43 @@ public class HeatmapController {
 
         setDefaultChoiceBoxOptions();
 
+        setListViewCellFactory();
+        fillListView();
+
         addRadioButtonEvents();
 
         //
 
         System.out.println("Setup finished");
+    }
+
+    private void refreshListView() {
+        pointListView.getItems().clear();
+        fillListView();
+    }
+
+    private void fillListView() {
+        pointListView.setItems(FXCollections.observableArrayList(heatmap.getPlayerDefencePointsFromSelection()));
+    }
+
+    private void setListViewCellFactory() {
+        pointListView.setCellFactory(param -> new ListCell<PlayerDefencePoint>() {
+            @Override
+            protected void updateItem(PlayerDefencePoint item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    if (item.getPlayer() == null) {
+                        setText("(" + Math.round(item.getX()) + "," + Math.round(item.getY()) + ")");
+                    } else {
+                        setText(item.getPlayer().getName() + "(" + Math.round(item.getX()) + ","
+                                + Math.round(item.getY()) + ")");
+                    }
+                }
+            }
+        });
     }
 
     private void setDefaultChoiceBoxOptions() {
@@ -243,9 +283,14 @@ public class HeatmapController {
         // System.out.println("Circle drawn");
     }
 
-    private void drawPlayerDefenceCircle(GraphicsContext ctx, double centerX, double centerY, double radius) {
-        drawCircle(ctx, centerX, centerY, radius, playerPointColor);
+    private void drawPlayerDefenceCircle(double centerX, double centerY) {
+        drawCircle(ctx, centerX, centerY, playerPointRadius, playerPointColor);
         // System.out.println("Player Circle drawn");
+    }
+
+    private void drawObjectiveCircle(double centerX, double centerY) {
+        drawCircle(ctx, centerX, centerY, objectivePointRadius, objectivePointColor);
+        // System.out.println("Objective Circle drawn");
     }
 
     private void addCanvasEvents() {
@@ -256,6 +301,7 @@ public class HeatmapController {
                 setMouseValuesAndUpdateText(mouseEvent);
                 if (mouseEvent.isPrimaryButtonDown()) {
                     addPointToHeatmap();
+                    refreshListView();
                 }
                 if (mouseEvent.isSecondaryButtonDown()) {
 
@@ -285,30 +331,28 @@ public class HeatmapController {
         }
     }
 
+    private void updatePlayerPointAlphaValue() {
+        double overLapAmount = heatmap.calculateMaxAmountOfOverlappingLayers(imageBoundWidth, imageBoundHeight,
+                playerPointRadius);
+        System.out.println("Max overlap amount:" + overLapAmount);
+        double calculatedAlpha = heatmap.calculateAlphaValuesFromMaxOverlap(overLapAmount);
+        System.out.println("Alpha value: " + calculatedAlpha);
+        playerPointColor = Color.rgb(255, 0, 0, calculatedAlpha);
+    }
+
     private void refreshCanvasDrawings() {
         // Clear canvas
         ctx.clearRect(0, 0, imageDisplayCanvas.getWidth(), imageDisplayCanvas.getHeight());
-        // For all playerDefencePoints in selected map, draw a playerCircle on canvas
-        for (PlayerDefencePoint p : heatmap.getCurrentSelectedMap().getPlayerDefencePoints()) {
-            drawPlayerDefenceCircle(ctx, p.getX() / imageNode.getWidth() * imageBoundWidth,
-                    p.getY() / imageNode.getHeight() * imageBoundHeight, playerPointRadius);
+        updatePlayerPointAlphaValue();
+
+        // Draw Points from heatmap with checkbox selection
+        // For all playerDefencePoints in selection, draw a playerCircle on canvas
+        for (PlayerDefencePoint p : heatmap.getRelativePlayerDefencePoints(imageBoundWidth, imageBoundHeight)) {
+            drawPlayerDefenceCircle(p.getX(), p.getY());
         }
 
-        if (objectiveChoiceBox.getValue() == null || objectiveChoiceBox.getValue() == "None") {
-            // Draw All Objectives
-            for (ObjectivePoint o : heatmap.getCurrentSelectedMap().getObjectivePoints()) {
-                drawCircle(ctx, o.getX() / imageNode.getWidth() * imageBoundWidth,
-                        o.getY() / imageNode.getHeight() * imageBoundHeight, objectivePointRadius, objectivePointColor);
-            }
-        } else {
-            // Draw only currently selected objective
-            for (ObjectivePoint o : heatmap.getCurrentSelectedMap().getObjectivePoints()) {
-                if (objectiveChoiceBox.getValue() == o.getName()) {
-                    drawCircle(ctx, o.getX() / imageNode.getWidth() * imageBoundWidth,
-                            o.getY() / imageNode.getHeight() * imageBoundHeight, objectivePointRadius,
-                            objectivePointColor);
-                }
-            }
+        for (ObjectivePoint o : heatmap.getRelativeObjectivePoints(imageBoundWidth, imageBoundHeight)) {
+            drawObjectiveCircle(o.getX(), o.getY());
         }
 
     }
@@ -353,10 +397,10 @@ public class HeatmapController {
         // imageBoundHeight);
 
         imageWidthText.setText("Width:" + Double.toString(imageBoundWidth));
-        imageHeightText.setText("Hegight: " + Double.toString(imageBoundHeight));
+        imageHeightText.setText("Height: " + Double.toString(imageBoundHeight));
 
         imageWidthTextRaw.setText("Width:" + Double.toString(imageNode.getWidth()));
-        imageHeightTextRaw.setText("Hegight: " + Double.toString(imageNode.getHeight()));
+        imageHeightTextRaw.setText("Height: " + Double.toString(imageNode.getHeight()));
     }
 
     private void addImageEvents() {
@@ -431,7 +475,8 @@ public class HeatmapController {
         System.out.println("Stage EventListener Set");
     }
 
-    private void fillChoiceBoxWithInterface(ChoiceBox<String> cb, ArrayList<? extends ChoiceBoxToStringInterface> objectArrayList) {
+    private void fillChoiceBoxWithInterface(ChoiceBox<String> cb,
+            ArrayList<? extends ChoiceBoxToStringInterface> objectArrayList) {
         for (ChoiceBoxToStringInterface object : objectArrayList) {
             cb.getItems().add(object.getChoiceBoxString());
         }
@@ -475,14 +520,15 @@ public class HeatmapController {
             heatmap.setEditorMap(newVal);
             updateImageInformationAndCanvas();
             refreshCanvasDrawings();
-            objectiveChoiceBox.getItems().clear();
-            fillObjectiveChoiceBox();
+            refreshListView();
+            refreshObjectiveChoiceBox();
         });
 
         matchChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Match: " + newVal);
             heatmap.setEditorMatchType(newVal);
             refreshCanvasDrawings();
+            refreshListView();
         });
 
         teamChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -490,11 +536,19 @@ public class HeatmapController {
             heatmap.setEditorTeam(newVal);
             refreshPlayerChoiceBox();
             refreshCanvasDrawings();
+            refreshListView();
         });
         objectiveChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Objective: " + newVal);
             heatmap.setEditorObjectivePoint(newVal);
             refreshCanvasDrawings();
+            refreshListView();
+        });
+        playerChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Editor Player: " + newVal);
+            heatmap.setEditorSelectedPlayer(newVal);
+            refreshCanvasDrawings();
+            refreshListView();
         });
     }
 
@@ -502,6 +556,11 @@ public class HeatmapController {
         // Empty playerChoiceBox, then fill it with players from selected team
         playerChoiceBox.getItems().clear();
         fillPlayerChoiceBox();
+    }
+
+    private void refreshObjectiveChoiceBox() {
+        objectiveChoiceBox.getItems().clear();
+        fillObjectiveChoiceBox();
     }
 
     private void updateImageInformationAndCanvas() {

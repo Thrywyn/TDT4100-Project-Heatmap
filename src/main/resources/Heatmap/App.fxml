@@ -154,7 +154,7 @@
                 <VBox prefHeight="775.0" prefWidth="164.0">
                     <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="List of Points:" />
-                        <ListView prefHeight="200.0" prefWidth="125.0" />
+                        <ListView fx:id="pointListView" prefHeight="200.0" prefWidth="125.0" />
                     </children>
                 </VBox>
                 <Separator orientation="VERTICAL" prefHeight="200.0" />
