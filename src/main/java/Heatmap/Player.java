@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 public class Player implements ChoiceBoxToStringInterface {
 
-    private ArrayList<Point> points = new ArrayList<Point>();
-
     private String name;
 
     public Player(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
         this.name = name;
     }
 

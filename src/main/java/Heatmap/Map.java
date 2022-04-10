@@ -1,5 +1,6 @@
 package Heatmap;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ public class Map implements ChoiceBoxToStringInterface {
 
     private String defaultPathPrefix = "src/main/resources/Heatmap/";
 
-    private FileInputStream inputStream;
     private Image image;
 
     private double width;
@@ -22,19 +22,36 @@ public class Map implements ChoiceBoxToStringInterface {
     ArrayList<PlayerDefencePoint> playerDefencePoints = new ArrayList<>();
     ArrayList<ObjectivePoint> objectivePoints = new ArrayList<>();
 
-    public Map(String name, String imgFileName) {
+    public Map(String name, String imgFileName) throws FileNotFoundException {
         this.name = name;
         this.imgFileName = imgFileName;
+
         try {
-            this.inputStream = new FileInputStream(defaultPathPrefix + imgFileName);
+            FileInputStream inputStream = new FileInputStream(defaultPathPrefix +
+                    imgFileName);
             this.image = new Image(inputStream);
             this.width = image.getWidth();
             this.height = image.getHeight();
 
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("File not found");
+            throw e;
         }
 
+        // try {
+        // Image fileImage = getFileImage(imgFileName);
+        // this.image = fileImage;
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
+
+    }
+
+    private File getFile(String filename) {
+        return new File(Map.class.getResource("maps/").getFile() + filename);
+    }
+
+    private Image getFileImage(String filename) {
+        return new Image(getFile(filename).toURI().toString());
     }
 
     public String getName() {
@@ -117,8 +134,19 @@ public class Map implements ChoiceBoxToStringInterface {
     }
 
     public static void main(String[] args) {
-        Map bazaar = new Map("Bazaar", "bazaar.jpg");
-        System.out.println(bazaar);
+        Map bazaar;
+        try {
+            bazaar = new Map("Bazaar", "bazaar.jpg");
+            System.out.println(bazaar);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Map arctic = new Map("Arctic", "arctic.jpg");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

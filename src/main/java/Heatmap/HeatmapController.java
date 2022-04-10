@@ -112,7 +112,7 @@ public class HeatmapController {
     private Color objectivePointColor = Color.rgb(0, 0, 255, 0.5);
 
     // FXML Objects
-    private Image imageNode = new Image(getClass().getResource("bazaar.jpg").toExternalForm());
+    private Image imageNode;
     private Scene scene;
     private Stage stage;
 

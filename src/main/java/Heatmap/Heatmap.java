@@ -36,19 +36,23 @@ public class Heatmap {
     }
 
     private void createMaps() {
-        Map bazaar = new Map("Bazaar", "bazaar.jpg");
-        maps.add(bazaar);
-        bazaar.addObjectivePoint(new ObjectivePoint(bazaar, 1884.0, 552.0, "Kyot"));
-        bazaar.addObjectivePoint(new ObjectivePoint(bazaar, 2798.0, 1218.0, "Tank"));
-        bazaar.addObjectivePoint(new ObjectivePoint(bazaar, 2300.0, 1522.0, "South East Courtyard"));
-        maps.add(new Map("Arctic", "arctic.jpg"));
-        maps.add(new Map("Abandoned", "abandoned.png"));
-        maps.add(new Map("Cargo", "cargo.jpg"));
-        maps.add(new Map("Quarantine", "quarantine.jpg"));
-        maps.add(new Map("Snowpeak", "snowpeak.jpg"));
-        maps.add(new Map("Suburbia", "suburbia.jpg"));
-        maps.add(new Map("Subway", "subway.jpg"));
-        maps.add(new Map("Tanker", "tanker.jpg"));
+        try {
+            Map bazaar = new Map("Bazaar", "bazaar.jpg");
+            maps.add(bazaar);
+            bazaar.addObjectivePoint(new ObjectivePoint(bazaar, 1884.0, 552.0, "Kyot"));
+            bazaar.addObjectivePoint(new ObjectivePoint(bazaar, 2798.0, 1218.0, "Tank"));
+            bazaar.addObjectivePoint(new ObjectivePoint(bazaar, 2300.0, 1522.0, "South East Courtyard"));
+            maps.add(new Map("Arctic", "arctic.jpg"));
+            maps.add(new Map("Abandoned", "abandoned.png"));
+            maps.add(new Map("Cargo", "cargo.jpg"));
+            maps.add(new Map("Quarantine", "quarantine.jpg"));
+            maps.add(new Map("Snowpeak", "snowpeak.jpg"));
+            maps.add(new Map("Suburbia", "suburbia.jpg"));
+            maps.add(new Map("Subway", "subway.jpg"));
+            maps.add(new Map("Tanker", "tanker.jpg"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void createMatchTypes() {
