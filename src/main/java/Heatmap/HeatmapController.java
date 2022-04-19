@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -63,9 +64,7 @@ public class HeatmapController {
     @FXML
     private Toggle editingModeNew;
     @FXML
-    private Toggle editingModeEdit;
-    @FXML
-    private Toggle editingModeDelete;
+    private Button editDeleteButton;
     @FXML
     private StackPane stackPaneImageCanvas;
     @FXML
@@ -139,8 +138,10 @@ public class HeatmapController {
 
         setListViewCellFactory();
         fillListView();
+        addListViewListener();
 
         addRadioButtonEvents();
+        addDeleteButtonListener();
 
         //
 
@@ -154,6 +155,40 @@ public class HeatmapController {
 
     private void fillListView() {
         pointListView.setItems(FXCollections.observableArrayList(heatmap.getPlayerDefencePointsFromSelection()));
+        pointListView.scrollTo(pointListView.getItems().size() - 1);
+    }
+
+    private void addListViewListener() {
+        pointListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                System.out.println("Selected: " + newSelection);
+                heatmap.setEditorSelectedPlayerDefencePoint(newSelection);
+                editDeleteButton.setDisable(false);
+            } else if (newSelection == null) {
+                System.out.println("Selected: null");
+                heatmap.setEditorSelectedPlayerDefencePoint(null);
+                editDeleteButton.setDisable(true);
+            }
+        });
+    }
+
+    private void addDeleteButtonListener() {
+        editDeleteButton.setOnAction(e -> {
+            heatmap.deleteSelectedPlayerPoint();
+
+            refreshListView();
+            refreshCanvasDrawings();
+            updateImageInformationAndCanvas();
+
+        });
+    }
+
+    private void refreshEverything() {
+        refreshListView();
+        refreshCanvasDrawings();
+        refreshObjectiveChoiceBox();
+        refreshPlayerChoiceBox();
+        updateImageInformationAndCanvas();
     }
 
     private void setListViewCellFactory() {
@@ -304,7 +339,7 @@ public class HeatmapController {
                     refreshListView();
                 }
                 if (mouseEvent.isSecondaryButtonDown()) {
-
+                    heatmap.getClosestPlayerPointInRadius(relativeMouseX, relativeMouseY, playerPointRadius);
                 }
 
             }
@@ -323,7 +358,7 @@ public class HeatmapController {
 
     protected void addPointToHeatmap() {
         try {
-            heatmap.addPointToCurrentMap(actualImageCoordinateX, actualImageCoordinateY);
+            heatmap.addPointToSelectedMap(actualImageCoordinateX, actualImageCoordinateY);
             System.out.println("Added new point to selected map object");
             refreshCanvasDrawings();
         } catch (Exception e) {
@@ -363,25 +398,10 @@ public class HeatmapController {
 
             if (selectedToggleButton.equals(editingModeNew)) {
                 editorModeString = "new";
-            } else if (selectedToggleButton.equals(editingModeEdit)) {
-                editorModeString = "edit";
-            } else if (selectedToggleButton.equals(editingModeDelete)) {
-                editorModeString = "delete";
             }
 
             System.out.println("Editor Mode: " + editorModeString);
         });
-    }
-
-    private void updateSelectedToggleButton() {
-        selectedToggleButton = editingMode.getSelectedToggle();
-        if (selectedToggleButton.equals(editingModeNew)) {
-            editorModeString = "new";
-        } else if (selectedToggleButton.equals(editingModeEdit)) {
-            editorModeString = "edit";
-        } else if (selectedToggleButton.equals(editingModeDelete)) {
-            editorModeString = "delete";
-        }
     }
 
     private void setDefaultImage() {
@@ -503,11 +523,11 @@ public class HeatmapController {
 
     private void fillPlayerChoiceBox() {
         playerChoiceBox.getItems().add("None");
-        fillChoiceBoxWithInterface(playerChoiceBox, heatmap.getCurrentSelectedTeam().getPlayers());
+        fillChoiceBoxWithInterface(playerChoiceBox, heatmap.getSelectedTeam().getPlayers());
     }
 
     private void fillObjectiveChoiceBox() {
-        fillChoiceBoxWithInterface(objectiveChoiceBox, heatmap.getCurrentSelectedMap().getObjectivePoints());
+        fillChoiceBoxWithInterface(objectiveChoiceBox, heatmap.getSelectedMap().getObjectivePoints());
     }
 
     private void addChoiceBoxEvents() {
@@ -515,7 +535,7 @@ public class HeatmapController {
             System.out.println("Editor Map: " + newVal);
             heatmap.setEditorMap(newVal);
             imageNode = new Image(
-                    getClass().getResource(heatmap.getCurrentSelectedMap().getImgFileName()).toExternalForm());
+                    getClass().getResource(heatmap.getSelectedMap().getImgFileName()).toExternalForm());
             imageDisplay.setImage(imageNode);
             heatmap.setEditorMap(newVal);
             updateImageInformationAndCanvas();

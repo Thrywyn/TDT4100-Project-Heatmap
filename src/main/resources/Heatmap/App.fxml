@@ -22,7 +22,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Heatmap.HeatmapController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Heatmap.HeatmapController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
@@ -120,18 +120,22 @@
                                 <Insets top="10.0" />
                             </VBox.margin>
                         </Separator>
-                        <VBox prefHeight="200.0" prefWidth="100.0">
+                        <VBox prefHeight="51.0" prefWidth="194.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Point Actions:" />
-                                <RadioButton fx:id="editingModeNew" mnemonicParsing="false" selected="true" text="New">
+                                <RadioButton fx:id="editingModeNew" disable="true" mnemonicParsing="false" selected="true" text="New">
                                     <toggleGroup>
                                         <ToggleGroup fx:id="editingMode" />
                                     </toggleGroup>
                                 </RadioButton>
-                                <RadioButton fx:id="editingModeEdit" mnemonicParsing="false" text="Edit" toggleGroup="$editingMode" />
-                                <RadioButton fx:id="editingModeDelete" mnemonicParsing="false" text="Delete" toggleGroup="$editingMode" />
                             </children>
                         </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Selection Actions:" />
+                        <Button fx:id="editDeleteButton" disable="true" mnemonicParsing="false" text="Delete" textFill="RED" />
+                     </children>
+                  </VBox>
                     </children>
                 </VBox>
             </children>
@@ -153,8 +157,8 @@
             <children>
                 <VBox prefHeight="775.0" prefWidth="164.0">
                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="List of Points:" />
-                        <ListView fx:id="pointListView" prefHeight="200.0" prefWidth="125.0" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="List of Player Points:" />
+                        <ListView fx:id="pointListView" prefHeight="444.0" prefWidth="146.0" />
                     </children>
                 </VBox>
                 <Separator orientation="VERTICAL" prefHeight="200.0" />
@@ -178,13 +182,13 @@
                             <children>
                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                     <children>
-                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Raw Image Information:" />
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Raw Image:" />
                                         <Text fx:id="imageWidthTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
                                         <Text fx:id="imageHeightTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
-                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Scaled Image Information:" />
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Scaled Image:" />
                                         <Text fx:id="imageWidthText" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
                                         <Text fx:id="imageHeightText" strokeType="OUTSIDE" strokeWidth="0.0" text="Height:" />
-                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mouse Information:" />
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Mouse:" />
                                         <Text id="mouseXYText" fx:id="clickXYText" strokeType="OUTSIDE" strokeWidth="0.0" text="Relative Click x,y :    (0,0)" />
                               <Text id="mouseXYText" fx:id="clickXYTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Raw Click x,y :    (0,0)" />
                                     </children>

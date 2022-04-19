@@ -48,17 +48,19 @@ public class PlayerDefencePoint extends Point {
 
     @Override
     public String toString() {
-        // return "{" +
-        // " matchType='" + getMatchType() + "'" +
-        // ", team='" + getTeam() + "'" +
-        // ", player='" + getPlayer() + "'" +
-        // ", obj='" + getObjectivePoint() + "'" +
-        // "}";
-        return "(" +
-                getX() +
-                ", " +
-                getY() +
-                ")";
+        String returnString = "";
+        returnString += "x: " + Math.round(this.getX()) + " y: " + Math.round(this.getY());
+        returnString += ", Map: " + this.getMap().getName();
+        returnString += ", Team: " + this.getTeam().getName();
+        returnString += ", Objective: " + this.getObjectivePoint().getName();
+        if (this.getPlayer() != null) {
+            returnString += ", Player: " + this.getPlayer().getName();
+        }
+        if (this.getMatchType() != null) {
+            returnString += ", MatchType: " + this.getMatchType().toString();
+        }
+        returnString += "]";
+        return returnString;
     }
 
     @Override

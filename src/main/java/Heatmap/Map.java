@@ -46,6 +46,12 @@ public class Map implements ChoiceBoxToStringInterface {
 
     }
 
+    public void removePlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
+        // Find equal playerdefencepoint and delete from list
+        playerDefencePoints.stream().filter(p -> p.equals(playerDefencePoint)).findFirst()
+                .ifPresent(p -> playerDefencePoints.remove(p));
+    }
+
     private File getFile(String filename) {
         return new File(Map.class.getResource("maps/").getFile() + filename);
     }

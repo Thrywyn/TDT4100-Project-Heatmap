@@ -20,6 +20,7 @@ public class Heatmap {
     private Team selectedTeam;
     private Player selectedPlayer;
     private ObjectivePoint selectedObjectivePoint;
+
     private PlayerDefencePoint selectedPlayerDefencePoint;
 
     public Heatmap() {
@@ -33,6 +34,48 @@ public class Heatmap {
     public String toString() {
         return "{" +
                 "}";
+    }
+
+    public void setEditorSelectedPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
+        this.selectedPlayerDefencePoint = playerDefencePoint;
+    }
+
+    public void deleteSelectedPlayerPoint() {
+        if (selectedPlayerDefencePoint != null) {
+            selectedMap.removePlayerDefencePoint(selectedPlayerDefencePoint);
+        }
+    }
+
+    public void setEditorSelectedPlayer(Player player) {
+        this.selectedPlayer = player;
+    }
+
+    public void selectClosestPlayerPointInRadius(double x, double y, double radius) {
+        PlayerDefencePoint closestPlayerPoint = getClosestPlayerPointInRadius(x, y, radius);
+        if (closestPlayerPoint != null) {
+            this.selectedPlayerDefencePoint = closestPlayerPoint;
+        }
+    }
+
+    public PlayerDefencePoint getClosestPlayerPoint(double x, double y) {
+        PlayerDefencePoint closestPlayer = null;
+        double closestDistance = Double.MAX_VALUE;
+        for (PlayerDefencePoint playerPoint : getPlayerDefencePointsFromSelection()) {
+            double distance = Math.sqrt(Math.pow(playerPoint.getX() - x, 2) + Math.pow(playerPoint.getY() - y, 2));
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestPlayer = playerPoint;
+            }
+        }
+        return closestPlayer;
+    }
+
+    public PlayerDefencePoint getClosestPlayerPointInRadius(double x, double y, double radius) {
+        PlayerDefencePoint closestPlayerPoint = getClosestPlayerPoint(x, y);
+        if (isOverlapping(x, y, closestPlayerPoint.getX(), closestPlayerPoint.getY(), radius)) {
+            return closestPlayerPoint;
+        }
+        return null;
     }
 
     private void createMaps() {
@@ -141,16 +184,16 @@ public class Heatmap {
     }
 
     // Add Player point to the map selected
-    public void addPointToCurrentMap(double x, double y) {
+    public void addPointToSelectedMap(double x, double y) {
         selectedMap.getPlayerDefencePoints().add(new PlayerDefencePoint(selectedMatchType, selectedMap, selectedTeam,
                 selectedPlayer, selectedObjectivePoint, x, y));
     }
 
-    public Map getCurrentSelectedMap() {
+    public Map getSelectedMap() {
         return selectedMap;
     }
 
-    public Team getCurrentSelectedTeam() {
+    public Team getSelectedTeam() {
         return selectedTeam;
     }
 
