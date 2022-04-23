@@ -1,5 +1,6 @@
 package Heatmap;
 
+import java.io.IOException;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -19,6 +20,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -73,9 +76,14 @@ public class HeatmapController {
     private Text clickXYTextRaw;
     @FXML
     private ListView<PlayerDefencePoint> pointListView;
+    @FXML
+    private MenuItem MenuFileExport;
+    @FXML
+    private MenuItem MenuFileImport;
 
     // Project Objects
     private Heatmap heatmap = new Heatmap();
+    private ImportExporter importExporter = new ImportExporter();
 
     // Mouse Related Variables
 
@@ -142,12 +150,50 @@ public class HeatmapController {
         fillListView();
         addListViewListener();
 
-
         addDeleteButtonListener();
-
-        //
+        setNavMenuOnAction();
 
         System.out.println("Setup finished");
+    }
+
+    private void setNavMenuOnAction() {
+        MenuFileExport.setOnAction(event -> {
+            handleExport();
+        });
+        MenuFileImport.setOnAction(event -> {
+            handleImport();
+            fillChoiceBoxes();
+            fillListView();
+        });
+    }
+
+    private void handleImport() {
+    }
+
+    private void handleExport() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Export Heatmap");
+        dialog.setHeaderText("Set filename");
+        dialog.setContentText("Name:");
+
+        try {
+            String filename = dialog.showAndWait().get();
+            importExporter.write(filename, heatmap);
+            System.out.println("Exported to " + filename);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Export Successful");
+            alert.setHeaderText("Export Successful");
+            alert.setContentText("Exported to " + filename);
+            alert.showAndWait();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+            displayException(e, "IOException error, Could not write to file");
+            try {
+                throw e;
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 
     private void refreshListView() {
@@ -225,6 +271,13 @@ public class HeatmapController {
     private void displayException(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.contentTextProperty().set(e.getMessage());
+        alert.show();
+
+    }
+
+    private void displayException(Exception e, String explanation) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.contentTextProperty().set(explanation + "\n" + e.getMessage());
         alert.show();
 
     }
