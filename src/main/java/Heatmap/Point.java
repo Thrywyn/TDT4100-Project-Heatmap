@@ -26,6 +26,10 @@ public class Point {
         this.dateCreated = LocalDate.now();
     }
 
+    public LocalDate getDateCreated() {
+        return this.dateCreated;
+    }
+
     public Map getMap() {
         return this.map;
     }

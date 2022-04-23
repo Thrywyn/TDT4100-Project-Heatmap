@@ -1,10 +1,8 @@
 package Heatmap;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Heatmap {
@@ -36,11 +34,15 @@ public class Heatmap {
                 "}";
     }
 
+    public PlayerDefencePoint getSelectedPlayerDefencePoint() {
+        return selectedPlayerDefencePoint;
+    }
+
     public void setEditorSelectedPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
         this.selectedPlayerDefencePoint = playerDefencePoint;
     }
 
-    public void deleteSelectedPlayerPoint() {
+    public void deleteSelectedPlayerDefencePoint() {
         if (selectedPlayerDefencePoint != null) {
             selectedMap.removePlayerDefencePoint(selectedPlayerDefencePoint);
         }
@@ -50,14 +52,21 @@ public class Heatmap {
         this.selectedPlayer = player;
     }
 
-    public void selectClosestPlayerPointInRadius(double x, double y, double radius) {
-        PlayerDefencePoint closestPlayerPoint = getClosestPlayerPointInRadius(x, y, radius);
-        if (closestPlayerPoint != null) {
-            this.selectedPlayerDefencePoint = closestPlayerPoint;
-        }
+    public void selectClosestPlayerPointInRadius(double x, double y, double radius, double canvasWidth,
+            double canvasHeight) {
+
+        double relativeRadius = radius / canvasWidth * selectedMap.getWidth();
+
+        double relativeX = x / canvasWidth * selectedMap.getWidth();
+        double relativeY = y / canvasHeight * selectedMap.getHeight();
+
+        PlayerDefencePoint closestPlayerPoint = getClosestPlayerPointInRadius(relativeX, relativeY, relativeRadius);
+
+        this.selectedPlayerDefencePoint = closestPlayerPoint;
     }
 
-    public PlayerDefencePoint getClosestPlayerPoint(double x, double y) {
+    private PlayerDefencePoint getClosestPlayerPoint(double x, double y) {
+
         PlayerDefencePoint closestPlayer = null;
         double closestDistance = Double.MAX_VALUE;
         for (PlayerDefencePoint playerPoint : getPlayerDefencePointsFromSelection()) {
@@ -70,8 +79,11 @@ public class Heatmap {
         return closestPlayer;
     }
 
-    public PlayerDefencePoint getClosestPlayerPointInRadius(double x, double y, double radius) {
+    private PlayerDefencePoint getClosestPlayerPointInRadius(double x, double y, double radius) {
         PlayerDefencePoint closestPlayerPoint = getClosestPlayerPoint(x, y);
+        if (closestPlayerPoint == null) {
+            return null;
+        }
         if (isOverlapping(x, y, closestPlayerPoint.getX(), closestPlayerPoint.getY(), radius)) {
             return closestPlayerPoint;
         }
@@ -211,13 +223,30 @@ public class Heatmap {
 
     // Return new array of playerDefencePoints with coordinates scaled to canvas
     // size
-    public ArrayList<PlayerDefencePoint> getRelativePlayerDefencePoints(double canvasWidth,
+    private ArrayList<PlayerDefencePoint> getRelativePlayerDefencePoints(double canvasWidth,
             double canvasHeight) {
         return getPlayerDefencePointsFromSelection().stream()
-                .map(p -> new PlayerDefencePoint(p.getMap(), p.getTeam(), p.getObjectivePoint(),
-                        p.getX() / selectedMap.getWidth() * canvasWidth,
-                        p.getY() / selectedMap.getHeight() * canvasHeight))
+                .map(p -> translatePointToRelative(p, canvasWidth, canvasHeight))
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public HashMap<PlayerDefencePoint, PlayerDefencePoint> getPlayerDefencePointMapAbsToRel(double canvasWidth,
+            double canvasHeight) {
+        HashMap<PlayerDefencePoint, PlayerDefencePoint> map = new HashMap<>();
+        for (PlayerDefencePoint p : getPlayerDefencePointsFromSelection()) {
+            map.put(p, translatePointToRelative(p, canvasWidth, canvasHeight));
+        }
+        return map;
+    }
+
+    public PlayerDefencePoint translatePointToRelative(PlayerDefencePoint p, double canvasWidth,
+            double canvasHeight) {
+        if (p == null) {
+            throw new IllegalArgumentException("PlayerDefencePoint cannot be null");
+        }
+        return new PlayerDefencePoint(p.getMap(), p.getTeam(), p.getObjectivePoint(),
+                p.getX() / selectedMap.getWidth() * canvasWidth,
+                p.getY() / selectedMap.getHeight() * canvasHeight);
     }
 
     // Return new array of ObjectivePoint with coordinates scaled to canvas size

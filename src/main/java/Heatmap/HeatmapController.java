@@ -23,6 +23,8 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -140,7 +142,7 @@ public class HeatmapController {
         fillListView();
         addListViewListener();
 
-        addRadioButtonEvents();
+
         addDeleteButtonListener();
 
         //
@@ -164,21 +166,25 @@ public class HeatmapController {
                 System.out.println("Selected: " + newSelection);
                 heatmap.setEditorSelectedPlayerDefencePoint(newSelection);
                 editDeleteButton.setDisable(false);
+                refreshCanvasDrawings();
             } else if (newSelection == null) {
                 System.out.println("Selected: null");
                 heatmap.setEditorSelectedPlayerDefencePoint(null);
                 editDeleteButton.setDisable(true);
+                refreshCanvasDrawings();
             }
         });
     }
 
     private void addDeleteButtonListener() {
         editDeleteButton.setOnAction(e -> {
-            heatmap.deleteSelectedPlayerPoint();
+            heatmap.deleteSelectedPlayerDefencePoint();
 
             refreshListView();
             refreshCanvasDrawings();
             updateImageInformationAndCanvas();
+
+            editDeleteButton.setDisable(true);
 
         });
     }
@@ -318,6 +324,11 @@ public class HeatmapController {
         // System.out.println("Circle drawn");
     }
 
+    private void drawPlayerDefenceCircle(double centerX, double centerY, Color color) {
+        drawCircle(ctx, centerX, centerY, playerPointRadius, color);
+        // System.out.println("Player Circle drawn");
+    }
+
     private void drawPlayerDefenceCircle(double centerX, double centerY) {
         drawCircle(ctx, centerX, centerY, playerPointRadius, playerPointColor);
         // System.out.println("Player Circle drawn");
@@ -339,7 +350,16 @@ public class HeatmapController {
                     refreshListView();
                 }
                 if (mouseEvent.isSecondaryButtonDown()) {
-                    heatmap.getClosestPlayerPointInRadius(relativeMouseX, relativeMouseY, playerPointRadius);
+                    heatmap.selectClosestPlayerPointInRadius(relativeMouseX, relativeMouseY, playerPointRadius,
+                            imageBoundWidth, imageBoundHeight);
+                    refreshCanvasDrawings();
+                    if (heatmap.getSelectedPlayerDefencePoint() == null) {
+                        editDeleteButton.setDisable(true);
+                    } else {
+                        editDeleteButton.setDisable(false);
+                    }
+
+                    System.out.println(heatmap.getSelectedPlayerDefencePoint());
                 }
 
             }
@@ -381,27 +401,21 @@ public class HeatmapController {
         updatePlayerPointAlphaValue();
 
         // Draw Points from heatmap with checkbox selection
-        // For all playerDefencePoints in selection, draw a playerCircle on canvas
-        for (PlayerDefencePoint p : heatmap.getRelativePlayerDefencePoints(imageBoundWidth, imageBoundHeight)) {
-            drawPlayerDefenceCircle(p.getX(), p.getY());
-        }
 
+        // Draw all player points from hashmap mapping absolute to relative points
+        heatmap.getPlayerDefencePointMapAbsToRel(imageBoundWidth, imageBoundHeight).forEach((key, value) -> {
+            if (key.equals(heatmap.getSelectedPlayerDefencePoint())) {
+                drawPlayerDefenceCircle(value.getX(), value.getY(), Color.ORANGE);
+            } else {
+                drawPlayerDefenceCircle(value.getX(), value.getY());
+            }
+        });
+
+        // Draw Objectives
         for (ObjectivePoint o : heatmap.getRelativeObjectivePoints(imageBoundWidth, imageBoundHeight)) {
             drawObjectiveCircle(o.getX(), o.getY());
         }
 
-    }
-
-    private void addRadioButtonEvents() {
-        editingMode.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-            selectedToggleButton = newVal;
-
-            if (selectedToggleButton.equals(editingModeNew)) {
-                editorModeString = "new";
-            }
-
-            System.out.println("Editor Mode: " + editorModeString);
-        });
     }
 
     private void setDefaultImage() {
@@ -421,28 +435,6 @@ public class HeatmapController {
 
         imageWidthTextRaw.setText("Width:" + Double.toString(imageNode.getWidth()));
         imageHeightTextRaw.setText("Height: " + Double.toString(imageNode.getHeight()));
-    }
-
-    private void addImageEvents() {
-        // On Mouse clicked
-        imageDisplay.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                updateImageInformationAndCanvas();
-                setMouseValuesAndUpdateText(mouseEvent);
-            }
-        });
-
-        // On mouse moved
-        imageDisplay.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                // setMouseValues(mouseEvent);
-                // updateImageInformationAndCanvas();
-                // refreshCanvasDrawings();
-            }
-        });
-
     }
 
     // Sets stage, ran from App
@@ -490,6 +482,19 @@ public class HeatmapController {
             Thread thread = new Thread(myRunnable);
             thread.start();
             // System.out.println("---End of property change---");
+        });
+
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            if (key.getCode() == KeyCode.DELETE) {
+                System.out.println("You pressed delete");
+
+                heatmap.deleteSelectedPlayerDefencePoint();
+                refreshListView();
+                refreshCanvasDrawings();
+                updateImageInformationAndCanvas();
+
+                editDeleteButton.setDisable(true);
+            }
         });
 
         System.out.println("Stage EventListener Set");
