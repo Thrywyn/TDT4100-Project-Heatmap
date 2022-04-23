@@ -160,4 +160,8 @@ public class Map implements ChoiceBoxToStringInterface {
         return name;
     }
 
+    public ObjectivePoint getObjectivePoint(String string) {
+        return objectivePoints.stream().filter(point -> point.getName().equals(string)).findFirst().orElse(null);
+    }
+
 }

@@ -106,4 +106,12 @@ public class PlayerDefencePoint extends Point {
         return true;
     }
 
+    public void setPlayer(Player player) {
+        this.player = (Player) player;
+    }
+
+    public void setMatchType(MatchType matchType2) {
+        this.matchType = matchType2;
+    }
+
 }

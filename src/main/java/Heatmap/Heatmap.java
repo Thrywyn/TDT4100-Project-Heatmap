@@ -146,9 +146,8 @@ public class Heatmap {
 
     // Editor Methods
 
-    public void setEditorMap(String mapName) {
-        this.selectedMap = maps.stream().filter(matchType -> matchType.getName().equals(mapName)).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("MatchType not found: " + mapName));
+    public void setSelectedMap(String mapName) {
+        this.selectedMap = maps.stream().filter(map -> map.getName().equals(mapName)).findAny().get();
     }
 
     public void setEditorMatchType(String matchTypeName) {
@@ -307,6 +306,44 @@ public class Heatmap {
 
     private boolean isOverlapping(Point p1, Point p2, double pointRadius) {
         return isOverlapping(p1.getX(), p1.getY(), p2.getX(), p2.getY(), pointRadius);
+    }
+
+    public void addMap(Map map) {
+        if (map == null) {
+            throw new IllegalArgumentException("Map cannot be null");
+        }
+        maps.add(map);
+    }
+
+    public void addTeam(Team team) {
+        if (team == null) {
+            throw new IllegalArgumentException("Team cannot be null");
+        }
+        teams.add(team);
+    }
+
+    public void addMatchType(MatchType matchType) {
+        if (matchType == null) {
+            throw new IllegalArgumentException("MatchType cannot be null");
+        }
+        matchTypes.add(matchType);
+    }
+
+    public Map getMap(String string) {
+        return maps.stream().filter(m -> m.getName().equals(string)).findFirst().get();
+    }
+
+    public Team getTeam(String string) {
+        return teams.stream().filter(t -> t.getName().equals(string)).findFirst().get();
+    }
+
+    public Player getPlayer(String string) {
+        return teams.stream().filter(t -> t.getPlayers().stream().anyMatch(p -> p.getName().equals(string)))
+                .findFirst().get().getPlayers().stream().filter(p -> p.getName().equals(string)).findFirst().get();
+    }
+
+    public MatchType getMatchType(String string) {
+        return matchTypes.stream().filter(m -> m.getName().equals(string)).findFirst().get();
     }
 
 }

@@ -168,6 +168,18 @@ public class HeatmapController {
     }
 
     private void handleImport() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Import Heatmap");
+        dialog.setHeaderText("What is the filename?");
+        dialog.setContentText("Name:");
+
+        try {
+            heatmap = importExporter.read(dialog.showAndWait().get());
+            heatmap.setSelectedMap("Bazaar");
+            reInitialize();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleExport() {
@@ -235,12 +247,39 @@ public class HeatmapController {
         });
     }
 
-    private void refreshEverything() {
-        refreshListView();
-        refreshCanvasDrawings();
-        refreshObjectiveChoiceBox();
-        refreshPlayerChoiceBox();
-        updateImageInformationAndCanvas();
+    private void reInitialize() {
+
+        // Image
+        setDefaultImage();
+
+        // Canvas
+        updateCanvasPaneSize();
+
+        // Editor Settings
+        clearChoiceBoxes();
+        fillChoiceBoxes();
+
+        setDefaultChoiceBoxOptions();
+
+        clearListView();
+        fillListView();
+    }
+
+    private void clearListView() {
+        pointListView.getItems().clear();
+    }
+
+    private void clearChoiceBoxes() {
+        teamChoiceBox.getItems().clear();
+        objectiveChoiceBox.getItems().clear();
+        mapChoiceBox.getItems().clear();
+        matchChoiceBox.getItems().clear();
+        playerChoiceBox.getItems().clear();
+    }
+
+    private void refreshTeamChoiceBox() {
+        playerChoiceBox.getItems().clear();
+        fillTeamChoiceBox();
     }
 
     private void setListViewCellFactory() {
@@ -473,7 +512,7 @@ public class HeatmapController {
 
     private void setDefaultImage() {
         imageDisplay.setImage(imageNode);
-        heatmap.setEditorMap("Bazaar");
+        heatmap.setSelectedMap("Bazaar");
     }
 
     private void updateImageInformation() {
@@ -581,7 +620,9 @@ public class HeatmapController {
 
     private void fillPlayerChoiceBox() {
         playerChoiceBox.getItems().add("None");
-        fillChoiceBoxWithInterface(playerChoiceBox, heatmap.getSelectedTeam().getPlayers());
+        if (heatmap.getSelectedTeam() != null) {
+            fillChoiceBoxWithInterface(playerChoiceBox, heatmap.getSelectedTeam().getPlayers());
+        }
     }
 
     private void fillObjectiveChoiceBox() {
@@ -591,11 +632,11 @@ public class HeatmapController {
     private void addChoiceBoxEvents() {
         mapChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Map: " + newVal);
-            heatmap.setEditorMap(newVal);
+            heatmap.setSelectedMap(newVal);
             imageNode = new Image(
                     getClass().getResource(heatmap.getSelectedMap().getImgFileName()).toExternalForm());
             imageDisplay.setImage(imageNode);
-            heatmap.setEditorMap(newVal);
+            heatmap.setSelectedMap(newVal);
             updateImageInformationAndCanvas();
             refreshCanvasDrawings();
             refreshListView();
