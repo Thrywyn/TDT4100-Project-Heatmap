@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -54,7 +57,8 @@ public class ImportExporter implements IReadWrite {
                     sb.append(pp.getTeam().getName()).append(";");
                     sb.append(pp.getObjectivePoint().getName()).append(";");
                     sb.append(pp.getX()).append(";");
-                    sb.append(pp.getY());
+                    sb.append(pp.getY()).append(";");
+                    sb.append(pp.getDateCreated().toString());
                     if (pp.getPlayer() != null) {
                         sb.append(";").append(pp.getPlayer().getName());
                     } else {
@@ -74,90 +78,95 @@ public class ImportExporter implements IReadWrite {
     @Override
     public Heatmap read(String fileName) throws FileNotFoundException {
         Heatmap heatmap = new Heatmap();
+        URL url = ImportExporter.class.getResource("saves");
+        File file = new File(url.getFile() + File.separator + fileName + ".txt");
 
-        try {
-            URL url = ImportExporter.class.getResource("saves");
-            File file = new File(url.getFile() + File.separator + fileName + ".txt");
+        if (!file.exists()) {
+            throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
+        }
 
-            if (!file.exists()) {
-                throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
-            }
-            try (Scanner scanner = new Scanner(file)) {
-                while (scanner.hasNextLine()) {
-                    String line = scanner.nextLine();
-                    if (line.startsWith("[Maps]")) {
-                        while (scanner.hasNextLine()) {
-                            line = scanner.nextLine();
-                            if (line.startsWith("[Teams]")) {
-                                break;
-                            }
-                            String[] mapInfo = line.split(";");
-                            Map map = new Map(mapInfo[0], mapInfo[1]);
-                            heatmap.addMap(map);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.startsWith("[Maps]")) {
+                    while (scanner.hasNextLine()) {
+                        line = scanner.nextLine();
+                        if (line.startsWith("[Teams]")) {
+                            break;
                         }
-                    } else if (line.startsWith("[Teams]")) {
-                        while (scanner.hasNextLine()) {
-                            line = scanner.nextLine();
-                            if (line.startsWith("[MatchTypes]")) {
-                                break;
-                            }
-                            String[] teamInfo = line.split(";");
-                            Team team = new Team(teamInfo[0]);
-                            for (int i = 1; i < teamInfo.length; i++) {
-                                team.addPlayer(new Player(teamInfo[i]));
-                            }
-                            heatmap.addTeam(team);
+                        String[] mapInfo = line.split(";");
+                        Map map = new Map(mapInfo[0], mapInfo[1]);
+                        // Stream to check if map with same name exists
+                        if (heatmap.getMaps().stream().anyMatch(m -> m.getName().equals(map.getName()))) {
+                            continue;
                         }
-                    } else if (line.startsWith("[MatchTypes]")) {
-                        while (scanner.hasNextLine()) {
-                            line = scanner.nextLine();
-                            if (line.startsWith("[ObjectivePoints]")) {
-                                break;
-                            }
-                            MatchType matchType = new MatchType(line);
-                            heatmap.addMatchType(matchType);
+                        heatmap.addMap(map);
+                    }
+                } else if (line.startsWith("[Teams]")) {
+                    while (scanner.hasNextLine()) {
+                        line = scanner.nextLine();
+                        if (line.startsWith("[MatchTypes]")) {
+                            break;
                         }
-                    } else if (line.startsWith("[ObjectivePoints]")) {
-                        while (scanner.hasNextLine()) {
-                            line = scanner.nextLine();
-                            if (line.startsWith("[PlayerDefencePoints]")) {
-                                break;
-                            }
-                            String[] objectivePointInfo = line.split(";");
-                            ObjectivePoint objectivePoint = new ObjectivePoint(heatmap.getMap(objectivePointInfo[0]),
-                                    Double.parseDouble(objectivePointInfo[1]),
-                                    Double.parseDouble(objectivePointInfo[2]), objectivePointInfo[3]);
-                            heatmap.getMap(objectivePointInfo[0]).addObjectivePoint(objectivePoint);
+                        String[] teamInfo = line.split(";");
+                        Team team = new Team(teamInfo[0]);
+                        for (int i = 1; i < teamInfo.length; i++) {
+                            team.addPlayer(new Player(teamInfo[i]));
                         }
-                    } else if (line.startsWith("[PlayerDefencePoints]")) {
-                        while (scanner.hasNextLine()) {
-                            line = scanner.nextLine();
-                            if (line.isEmpty()) {
-                                break;
-                            }
-                            String[] playerDefencePointInfo = line.split(";");
-                            PlayerDefencePoint playerDefencePoint = new PlayerDefencePoint(
-                                    heatmap.getMap(playerDefencePointInfo[0]),
-                                    heatmap.getTeam(playerDefencePointInfo[1]),
-                                    heatmap.getMap(playerDefencePointInfo[0]).getObjectivePoint(
-                                            playerDefencePointInfo[2]),
-                                    Double.parseDouble(playerDefencePointInfo[3]),
-                                    Double.parseDouble(playerDefencePointInfo[4]));
-                            if (!playerDefencePointInfo[5].equals("null")) {
-                                playerDefencePoint.setPlayer(heatmap.getPlayer(playerDefencePointInfo[5]));
-                            }
-                            if (!playerDefencePointInfo[6].equals("null")) {
-                                playerDefencePoint.setMatchType(heatmap.getMatchType(playerDefencePointInfo[6]));
-                            }
+                        heatmap.addTeam(team);
+                    }
+                } else if (line.startsWith("[MatchTypes]")) {
+                    while (scanner.hasNextLine()) {
+                        line = scanner.nextLine();
+                        if (line.startsWith("[ObjectivePoints]")) {
+                            break;
                         }
+                        MatchType matchType = new MatchType(line);
+                        if (heatmap.getMatchTypes().stream()
+                                .anyMatch(mt -> mt.getName().equals(matchType.getName()))) {
+                            continue;
+                        }
+                        heatmap.addMatchType(matchType);
+                    }
+                } else if (line.startsWith("[ObjectivePoints]")) {
+                    while (scanner.hasNextLine()) {
+                        line = scanner.nextLine();
+                        if (line.startsWith("[PlayerDefencePoints]")) {
+                            break;
+                        }
+                        String[] objectivePointInfo = line.split(";");
+                        ObjectivePoint objectivePoint = new ObjectivePoint(heatmap.getMap(objectivePointInfo[0]),
+                                Double.parseDouble(objectivePointInfo[1]),
+                                Double.parseDouble(objectivePointInfo[2]), objectivePointInfo[3]);
+                        heatmap.getMap(objectivePointInfo[0]).addObjectivePoint(objectivePoint);
+                    }
+                } else if (line.startsWith("[PlayerDefencePoints]")) {
+                    while (scanner.hasNextLine()) {
+                        line = scanner.nextLine();
+                        if (line.isEmpty()) {
+                            break;
+                        }
+                        String[] playerDefencePointInfo = line.split(";");
+                        PlayerDefencePoint playerDefencePoint = new PlayerDefencePoint(
+                                heatmap.getMap(playerDefencePointInfo[0]),
+                                heatmap.getTeam(playerDefencePointInfo[1]),
+                                heatmap.getMap(playerDefencePointInfo[0]).getObjectivePoint(
+                                        playerDefencePointInfo[2]),
+                                Double.parseDouble(playerDefencePointInfo[3]),
+                                Double.parseDouble(playerDefencePointInfo[4]));
+                        playerDefencePoint.setDateCreated(
+                                LocalDateTime.parse(playerDefencePointInfo[5]));
+                        if (!playerDefencePointInfo[6].equals("null")) {
+                            playerDefencePoint.setPlayer(heatmap.getPlayer(playerDefencePointInfo[6]));
+                        }
+                        if (!playerDefencePointInfo[7].equals("null")) {
+                            playerDefencePoint.setMatchType(heatmap.getMatchType(playerDefencePointInfo[7]));
+                        }
+                        heatmap.getMap(playerDefencePointInfo[0]).addPlayerDefencePoint(playerDefencePoint);
                     }
                 }
-                return heatmap;
-            } catch (Exception e) {
-                throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
             }
-        } catch (FileNotFoundException e) {
-            throw e;
+            return heatmap;
         }
     }
 

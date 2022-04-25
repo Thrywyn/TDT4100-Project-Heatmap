@@ -162,8 +162,6 @@ public class HeatmapController {
         });
         MenuFileImport.setOnAction(event -> {
             handleImport();
-            fillChoiceBoxes();
-            fillListView();
         });
     }
 
@@ -175,11 +173,32 @@ public class HeatmapController {
 
         try {
             heatmap = importExporter.read(dialog.showAndWait().get());
-            heatmap.setSelectedMap("Bazaar");
-            reInitialize();
+            heatmap.setEditorSelectedMap("Bazaar");
+            refillMapChoiceBox();
+            refillTeamChoiceBox();
+            refillObjectiveChoiceBox();
+            refillhmatchChoiceBox();
+            refillPlayerChoiceBox();
+            updateImageInformationAndCanvas();
+            updateCanvasPaneSize();
+            reSetImageNode();
+            if (heatmap.getSelectedMap() != null) {
+                mapChoiceBox.getSelectionModel().select(heatmap.getSelectedMap().getChoiceBoxString());
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void refillhmatchChoiceBox() {
+        matchChoiceBox.getItems().clear();
+        fillMatchTypeChoiceBox();
+    }
+
+    private void refillMapChoiceBox() {
+        mapChoiceBox.getItems().clear();
+        fillMapChoiceBox();
     }
 
     private void handleExport() {
@@ -250,14 +269,17 @@ public class HeatmapController {
     private void reInitialize() {
 
         // Image
-        setDefaultImage();
+        heatmap.setEditorSelectedMap("Bazaar");
 
         // Canvas
         updateCanvasPaneSize();
 
         // Editor Settings
         clearChoiceBoxes();
+
         fillChoiceBoxes();
+        playerChoiceBox.getItems().clear();
+        objectiveChoiceBox.getItems().clear();
 
         setDefaultChoiceBoxOptions();
 
@@ -277,8 +299,8 @@ public class HeatmapController {
         playerChoiceBox.getItems().clear();
     }
 
-    private void refreshTeamChoiceBox() {
-        playerChoiceBox.getItems().clear();
+    private void refillTeamChoiceBox() {
+        teamChoiceBox.getItems().clear();
         fillTeamChoiceBox();
     }
 
@@ -512,7 +534,7 @@ public class HeatmapController {
 
     private void setDefaultImage() {
         imageDisplay.setImage(imageNode);
-        heatmap.setSelectedMap("Bazaar");
+        heatmap.setEditorSelectedMap("Bazaar");
     }
 
     private void updateImageInformation() {
@@ -632,15 +654,15 @@ public class HeatmapController {
     private void addChoiceBoxEvents() {
         mapChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Map: " + newVal);
-            heatmap.setSelectedMap(newVal);
-            imageNode = new Image(
-                    getClass().getResource(heatmap.getSelectedMap().getImgFileName()).toExternalForm());
-            imageDisplay.setImage(imageNode);
-            heatmap.setSelectedMap(newVal);
+            if (newVal == null) {
+                return;
+            }
+            heatmap.setEditorSelectedMap(newVal);
+            reSetImageNode();
             updateImageInformationAndCanvas();
             refreshCanvasDrawings();
             refreshListView();
-            refreshObjectiveChoiceBox();
+            refillObjectiveChoiceBox();
         });
 
         matchChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -653,7 +675,7 @@ public class HeatmapController {
         teamChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Team: " + newVal);
             heatmap.setEditorTeam(newVal);
-            refreshPlayerChoiceBox();
+            refillPlayerChoiceBox();
             refreshCanvasDrawings();
             refreshListView();
         });
@@ -671,13 +693,19 @@ public class HeatmapController {
         });
     }
 
-    private void refreshPlayerChoiceBox() {
+    private void reSetImageNode() {
+        imageNode = new Image(
+                getClass().getResource(heatmap.getSelectedMap().getImgFileName()).toExternalForm());
+        imageDisplay.setImage(imageNode);
+    }
+
+    private void refillPlayerChoiceBox() {
         // Empty playerChoiceBox, then fill it with players from selected team
         playerChoiceBox.getItems().clear();
         fillPlayerChoiceBox();
     }
 
-    private void refreshObjectiveChoiceBox() {
+    private void refillObjectiveChoiceBox() {
         objectiveChoiceBox.getItems().clear();
         fillObjectiveChoiceBox();
     }

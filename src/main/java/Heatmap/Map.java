@@ -164,4 +164,8 @@ public class Map implements ChoiceBoxToStringInterface {
         return objectivePoints.stream().filter(point -> point.getName().equals(string)).findFirst().orElse(null);
     }
 
+    public void addPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
+        this.playerDefencePoints.add(playerDefencePoint);
+    }
+
 }

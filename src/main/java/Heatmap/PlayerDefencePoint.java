@@ -1,5 +1,8 @@
 package Heatmap;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class PlayerDefencePoint extends Point {
 
     MatchType matchType;
@@ -112,6 +115,10 @@ public class PlayerDefencePoint extends Point {
 
     public void setMatchType(MatchType matchType2) {
         this.matchType = matchType2;
+    }
+
+    public void setDateCreated(LocalDateTime parse) {
+        this.dateCreated = parse;
     }
 
 }

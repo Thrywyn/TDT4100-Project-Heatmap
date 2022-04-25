@@ -1,11 +1,12 @@
 package Heatmap;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Point {
 
     Map map;
-    LocalDate dateCreated;
+    LocalDateTime dateCreated;
 
     Double x;
     Double y;
@@ -23,10 +24,10 @@ public class Point {
         this.map = map;
         this.x = x;
         this.y = y;
-        this.dateCreated = LocalDate.now();
+        this.dateCreated = LocalDateTime.now();
     }
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return this.dateCreated;
     }
 

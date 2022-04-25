@@ -3,6 +3,7 @@ package Heatmap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class Heatmap {
@@ -26,6 +27,9 @@ public class Heatmap {
         createMaps();
         createMatchTypes();
         createTeams();
+        this.selectedMap = maps.get(0);
+        this.selectedMatchType = matchTypes.get(0);
+
     }
 
     @Override
@@ -146,8 +150,14 @@ public class Heatmap {
 
     // Editor Methods
 
-    public void setSelectedMap(String mapName) {
-        this.selectedMap = maps.stream().filter(map -> map.getName().equals(mapName)).findAny().get();
+    public void setEditorSelectedMap(String mapName) {
+        try {
+            this.selectedMap = maps.stream().filter(map -> map.getName().equals(mapName)).collect(Collectors.toList())
+                    .get(0);
+        } catch (NoSuchElementException e) {
+            System.out.println("Map not found");
+            e.printStackTrace();
+        }
     }
 
     public void setEditorMatchType(String matchTypeName) {
@@ -196,7 +206,7 @@ public class Heatmap {
 
     // Add Player point to the map selected
     public void addPointToSelectedMap(double x, double y) {
-        selectedMap.getPlayerDefencePoints().add(new PlayerDefencePoint(selectedMatchType, selectedMap, selectedTeam,
+        selectedMap.addPlayerDefencePoint(new PlayerDefencePoint(selectedMatchType, selectedMap, selectedTeam,
                 selectedPlayer, selectedObjectivePoint, x, y));
     }
 
