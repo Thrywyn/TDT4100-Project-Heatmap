@@ -3,6 +3,7 @@ package Heatmap;
 import java.io.IOException;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javafx.beans.binding.Bindings;
@@ -80,6 +81,14 @@ public class HeatmapController {
     private MenuItem MenuFileExport;
     @FXML
     private MenuItem MenuFileImport;
+    @FXML
+    private Button buttonNewTeam;
+    @FXML
+    private Button buttonNewObjective;
+    @FXML
+    private Button buttonNewMatchType;
+    @FXML
+    private Button buttonNewPlayer;
 
     // Project Objects
     private Heatmap heatmap = new Heatmap();
@@ -143,17 +152,105 @@ public class HeatmapController {
         // Editor Settings
         fillChoiceBoxes();
         addChoiceBoxEvents();
-
         setDefaultChoiceBoxOptions();
 
+        // List View
         setListViewCellFactory();
         fillListView();
         addListViewListener();
-
         addDeleteButtonListener();
+
+        // Nav Menu
         setNavMenuOnAction();
 
+        addNewButtonListeners();
+
         System.out.println("Setup finished");
+    }
+
+    private void addNewButtonListeners() {
+        buttonNewTeam.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog("Team Name");
+            dialog.setTitle("New Team");
+            dialog.setHeaderText("Enter a name for the new team");
+            dialog.setContentText("Team Name:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> {
+                try {
+                    heatmap.addTeam(name);
+                    refillTeamChoiceBox();
+                    teamChoiceBox.getSelectionModel().select(name);
+                } catch (Exception e1) {
+                    displayException(e1);
+                }
+            });
+        });
+
+        buttonNewObjective.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog("Objective Name");
+            dialog.setTitle("New Objective");
+            dialog.setHeaderText("Enter a name for the new objective");
+            dialog.setContentText("Objective Name:");
+
+            Optional<String> nameObjective = dialog.showAndWait();
+
+            TextInputDialog dialog2 = new TextInputDialog("Objective Position");
+            dialog2.setTitle("New Objective");
+            dialog2.setHeaderText("Enter a position for the new objective in format x,y");
+            dialog2.setContentText("Objective Position:");
+
+            Optional<String> positionObjective = dialog2.showAndWait();
+
+            if (nameObjective.isPresent() && positionObjective.isPresent()) {
+                try {
+                    heatmap.addObjective(nameObjective.get(), positionObjective.get());
+                    refillObjectiveChoiceBox();
+                    refreshCanvasDrawings();
+                    objectiveChoiceBox.getSelectionModel().select(nameObjective.get());
+                } catch (IllegalArgumentException ex) {
+                    displayException(ex, "Invalid Objective Position");
+                }
+            }
+        });
+
+        buttonNewMatchType.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog("Match Type Name");
+            dialog.setTitle("New Match Type");
+            dialog.setHeaderText("Enter a name for the new match type");
+            dialog.setContentText("Match Type Name:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> {
+                try {
+                    heatmap.addMatchType(name);
+                    refillMatchTypeChoiceBox();
+                    matchChoiceBox.getSelectionModel().select(name);
+                } catch (IllegalArgumentException ex) {
+                    displayException(ex);
+                }
+            });
+        });
+
+        buttonNewPlayer.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog("Player Name");
+            dialog.setTitle("New Player");
+            dialog.setHeaderText("Enter a name for the new player");
+            dialog.setContentText("Player Name:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> {
+                try {
+                    heatmap.addPlayerToSelectedTeam(name);
+                    refillPlayerChoiceBox();
+                    playerChoiceBox.getSelectionModel().select(name);
+                } catch (IllegalStateException ex) {
+                    displayException(ex);
+                } catch (IllegalArgumentException ex) {
+                    displayException(ex);
+                }
+            });
+        });
     }
 
     private void setNavMenuOnAction() {
@@ -177,7 +274,7 @@ public class HeatmapController {
             refillMapChoiceBox();
             refillTeamChoiceBox();
             refillObjectiveChoiceBox();
-            refillhmatchChoiceBox();
+            refillMatchTypeChoiceBox();
             refillPlayerChoiceBox();
             updateImageInformationAndCanvas();
             updateCanvasPaneSize();
@@ -191,7 +288,7 @@ public class HeatmapController {
         }
     }
 
-    private void refillhmatchChoiceBox() {
+    private void refillMatchTypeChoiceBox() {
         matchChoiceBox.getItems().clear();
         fillMatchTypeChoiceBox();
     }
@@ -467,6 +564,7 @@ public class HeatmapController {
                     heatmap.selectClosestPlayerPointInRadius(relativeMouseX, relativeMouseY, playerPointRadius,
                             imageBoundWidth, imageBoundHeight);
                     refreshCanvasDrawings();
+                    updateListViewSelection();
                     if (heatmap.getSelectedPlayerDefencePoint() == null) {
                         editDeleteButton.setDisable(true);
                     } else {
@@ -476,6 +574,13 @@ public class HeatmapController {
                     System.out.println(heatmap.getSelectedPlayerDefencePoint());
                 }
 
+            }
+
+            private void updateListViewSelection() {
+                if (heatmap.getSelectedPlayerDefencePoint() != null) {
+                    pointListView.getSelectionModel().select(heatmap.getSelectedPlayerDefencePoint());
+                    pointListView.scrollTo(heatmap.getSelectedPlayerDefencePoint());
+                }
             }
 
         });
@@ -519,11 +624,16 @@ public class HeatmapController {
         // Draw all player points from hashmap mapping absolute to relative points
         heatmap.getPlayerDefencePointMapAbsToRel(imageBoundWidth, imageBoundHeight).forEach((key, value) -> {
             if (key.equals(heatmap.getSelectedPlayerDefencePoint())) {
-                drawPlayerDefenceCircle(value.getX(), value.getY(), Color.ORANGE);
+                // Do nothing
             } else {
                 drawPlayerDefenceCircle(value.getX(), value.getY());
             }
         });
+
+        heatmap.getPlayerDefencePointMapAbsToRel(imageBoundWidth, imageBoundHeight).entrySet().stream().filter(
+                entry -> entry.getKey().equals(heatmap.getSelectedPlayerDefencePoint()))
+                .forEach(entry -> drawPlayerDefenceCircle(entry.getValue().getX(), entry.getValue().getY(),
+                        Color.ORANGE));
 
         // Draw Objectives
         for (ObjectivePoint o : heatmap.getRelativeObjectivePoints(imageBoundWidth, imageBoundHeight)) {

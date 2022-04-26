@@ -1,5 +1,6 @@
 package Heatmap;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -329,12 +330,21 @@ public class Heatmap {
         if (team == null) {
             throw new IllegalArgumentException("Team cannot be null");
         }
+        if (teams.contains(team)) {
+            throw new IllegalArgumentException("Team already exists");
+        }
+        if (teams.stream().map(Team::getName).anyMatch(name -> name.equals(team.getName()))) {
+            throw new IllegalArgumentException("Team name already exists");
+        }
         teams.add(team);
     }
 
     public void addMatchType(MatchType matchType) {
         if (matchType == null) {
             throw new IllegalArgumentException("MatchType cannot be null");
+        }
+        if (matchTypes.contains(matchType)) {
+            throw new IllegalArgumentException("MatchType already exists");
         }
         matchTypes.add(matchType);
     }
@@ -353,7 +363,43 @@ public class Heatmap {
     }
 
     public MatchType getMatchType(String string) {
-        return matchTypes.stream().filter(m -> m.getName().equals(string)).findFirst().get();
+        if (matchTypes.stream().filter(m -> m.getName().equals(string)).findFirst().isPresent()) {
+            return matchTypes.stream().filter(m -> m.getName().equals(string)).findFirst().get();
+        } else {
+            throw new IllegalArgumentException("MatchType was not found");
+        }
+    }
+
+    public void addMap(String mapName, String fileName) throws FileNotFoundException {
+        addMap(new Map(mapName, fileName));
+    }
+
+    public void addTeam(String name) {
+        addTeam(new Team(name));
+    }
+
+    public void addObjective(String name, String pos) {
+        if (pos.matches("[0-9]*,[0-9]*")) {
+            String[] xy = pos.split(",");
+            addObjective(new ObjectivePoint(selectedMap, Double.parseDouble(xy[0]), Double.parseDouble(xy[1]), name));
+        } else {
+            throw new IllegalArgumentException("Objective point position must be in format x,y");
+        }
+    }
+
+    private void addObjective(ObjectivePoint objectivePoint) {
+        selectedMap.addObjectivePoint(objectivePoint);
+    }
+
+    public void addMatchType(String name) {
+        addMatchType(new MatchType(name));
+    }
+
+    public void addPlayerToSelectedTeam(String name) throws IllegalStateException {
+        if (selectedTeam == null) {
+            throw new IllegalStateException("No team selected");
+        }
+        selectedTeam.addPlayer(new Player(name));
     }
 
 }

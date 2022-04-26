@@ -68,21 +68,20 @@
                                       <HBox prefHeight="100.0" prefWidth="200.0">
                                           <children>
                                               <ChoiceBox fx:id="mapChoiceBox" prefWidth="150.0" />
-                                              <Button mnemonicParsing="false" text="New" />
                                           </children>
                                       </HBox>
                                       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Team" />
                                       <HBox prefHeight="100.0" prefWidth="200.0">
                                           <children>
                                               <ChoiceBox fx:id="teamChoiceBox" prefWidth="150.0" />
-                                              <Button mnemonicParsing="false" text="New" />
+                                              <Button fx:id="buttonNewTeam" mnemonicParsing="false" text="New" />
                                           </children>
                                       </HBox>
                                       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective" />
                                       <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
                                               <ChoiceBox fx:id="objectiveChoiceBox" prefWidth="150.0" />
-                                              <Button mnemonicParsing="false" text="New" />
+                                              <Button fx:id="buttonNewObjective" mnemonicParsing="false" text="New" />
                                  </children>
                                       </HBox>
                            </children>
@@ -100,14 +99,14 @@
                                       <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
                                               <ChoiceBox fx:id="matchChoiceBox" prefWidth="150.0" />
-                                              <Button mnemonicParsing="false" text="New" />
+                                              <Button fx:id="buttonNewMatchType" mnemonicParsing="false" text="New" />
                                  </children>
                                       </HBox>
                                       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Player" />
                                       <HBox prefHeight="100.0" prefWidth="200.0">
                                           <children>
                                               <ChoiceBox fx:id="playerChoiceBox" prefWidth="150.0" />
-                                              <Button mnemonicParsing="false" text="New" />
+                                              <Button fx:id="buttonNewPlayer" mnemonicParsing="false" text="New" />
                                           </children>
                                       </HBox>
                            </children>

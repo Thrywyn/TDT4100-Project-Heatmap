@@ -131,6 +131,16 @@ public class Map implements ChoiceBoxToStringInterface {
     }
 
     public void addObjectivePoint(ObjectivePoint objectivePoint) {
+        if (objectivePoint == null) {
+            throw new IllegalArgumentException("ObjectivePoint cannot be null");
+        }
+        if (getObjectivePoints().contains(objectivePoint)) {
+            throw new IllegalArgumentException("ObjectivePoint already exists");
+        }
+        if (getObjectivePoints().stream().map(ObjectivePoint::getName)
+                .anyMatch(name -> name.equals(objectivePoint.getName()))) {
+            throw new IllegalArgumentException("ObjectivePoint name already exists");
+        }
         this.objectivePoints.add(objectivePoint);
     }
 
