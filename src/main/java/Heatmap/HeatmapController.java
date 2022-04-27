@@ -3,6 +3,8 @@ package Heatmap;
 import java.io.IOException;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
@@ -89,6 +92,22 @@ public class HeatmapController {
     private Button buttonNewMatchType;
     @FXML
     private Button buttonNewPlayer;
+    @FXML
+    private Slider sliderPlayerRadius;
+    @FXML
+    private Slider sliderObjectiveRadius;
+
+    // Text Point Information
+    @FXML
+    private Text textPointInfoPosition;
+    @FXML
+    private Text textPointInfoTeam;
+    @FXML
+    private Text textPointInfoObjective;
+    @FXML
+    private Text textPointInfoMatchType;
+    @FXML
+    private Text textPointInfoPlayer;
 
     // Project Objects
     private Heatmap heatmap = new Heatmap();
@@ -160,12 +179,56 @@ public class HeatmapController {
         addListViewListener();
         addDeleteButtonListener();
 
+        //
+        addSliderEvents();
+
         // Nav Menu
         setNavMenuOnAction();
 
         addNewButtonListeners();
 
         System.out.println("Setup finished");
+    }
+
+    private void updatePointInformationText() {
+        if (heatmap.getSelectedPlayerDefencePoint() != null) {
+            textPointInfoPosition.setText("Position: " + heatmap.getSelectedPlayerDefencePoint().getX() + ","
+                    + heatmap.getSelectedPlayerDefencePoint().getY());
+            textPointInfoTeam.setText("Team: " + heatmap.getSelectedPlayerDefencePoint().getTeam().getName());
+            textPointInfoObjective
+                    .setText("Objective: " + heatmap.getSelectedPlayerDefencePoint().getObjectivePoint().getName());
+
+            if (heatmap.getSelectedPlayerDefencePoint().getMatchType() != null) {
+                textPointInfoMatchType
+                        .setText("Match Type: " + heatmap.getSelectedPlayerDefencePoint().getMatchType().getName());
+            } else {
+                textPointInfoMatchType.setText("Match Type: None");
+            }
+
+            if (heatmap.getSelectedPlayerDefencePoint().getPlayer() != null) {
+                textPointInfoPlayer.setText("Player: " + heatmap.getSelectedPlayerDefencePoint().getPlayer().getName());
+            } else {
+                textPointInfoPlayer.setText("Player: None");
+            }
+        } else {
+            textPointInfoPosition.setText("Position: ");
+            textPointInfoTeam.setText("Team: ");
+            textPointInfoObjective.setText("Objective: ");
+            textPointInfoMatchType.setText("Match Type: ");
+            textPointInfoPlayer.setText("Player: ");
+        }
+
+    }
+
+    private void addSliderEvents() {
+        sliderPlayerRadius.valueProperty().addListener((observable, oldValue, newValue) -> {
+            playerPointRadius = newValue.doubleValue();
+            refreshCanvasDrawings();
+        });
+        sliderObjectiveRadius.valueProperty().addListener((observable, oldValue, newValue) -> {
+            objectivePointRadius = newValue.doubleValue();
+            refreshCanvasDrawings();
+        });
     }
 
     private void addNewButtonListeners() {
@@ -304,22 +367,26 @@ public class HeatmapController {
         dialog.setHeaderText("Set filename");
         dialog.setContentText("Name:");
 
-        try {
-            String filename = dialog.showAndWait().get();
-            importExporter.write(filename, heatmap);
-            System.out.println("Exported to " + filename);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Export Successful");
-            alert.setHeaderText("Export Successful");
-            alert.setContentText("Exported to " + filename);
-            alert.showAndWait();
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-            displayException(e, "IOException error, Could not write to file");
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
             try {
-                throw e;
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                String filename = result.get();
+                importExporter.write(filename, heatmap);
+                System.out.println("Exported to " + filename);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Export Successful");
+                alert.setHeaderText("Export Successful");
+                alert.setContentText("Exported to " + filename);
+                alert.showAndWait();
+            } catch (IOException e) {
+                System.out.println("Error: " + e.getMessage());
+                displayException(e, "IOException error, Could not write to file");
+                try {
+                    throw e;
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         }
     }
@@ -340,13 +407,13 @@ public class HeatmapController {
                 System.out.println("Selected: " + newSelection);
                 heatmap.setEditorSelectedPlayerDefencePoint(newSelection);
                 editDeleteButton.setDisable(false);
-                refreshCanvasDrawings();
             } else if (newSelection == null) {
                 System.out.println("Selected: null");
                 heatmap.setEditorSelectedPlayerDefencePoint(null);
                 editDeleteButton.setDisable(true);
-                refreshCanvasDrawings();
             }
+            updatePointInformationText();
+            refreshCanvasDrawings();
         });
     }
 
@@ -570,6 +637,7 @@ public class HeatmapController {
                     } else {
                         editDeleteButton.setDisable(false);
                     }
+                    updatePointInformationText();
 
                     System.out.println(heatmap.getSelectedPlayerDefencePoint());
                 }
@@ -747,6 +815,7 @@ public class HeatmapController {
     }
 
     private void fillTeamChoiceBox() {
+        teamChoiceBox.getItems().add("None");
         fillChoiceBoxWithInterface(teamChoiceBox, heatmap.getTeams());
     }
 
@@ -758,6 +827,7 @@ public class HeatmapController {
     }
 
     private void fillObjectiveChoiceBox() {
+        objectiveChoiceBox.getItems().add("None");
         fillChoiceBoxWithInterface(objectiveChoiceBox, heatmap.getSelectedMap().getObjectivePoints());
     }
 

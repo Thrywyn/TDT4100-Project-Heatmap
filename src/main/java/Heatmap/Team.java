@@ -38,7 +38,7 @@ public class Team implements ChoiceBoxToStringInterface {
         return name;
     }
 
-    public Object getName() {
+    public String getName() {
         return name;
     }
 

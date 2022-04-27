@@ -7,9 +7,8 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -121,11 +120,10 @@
                         <VBox prefHeight="51.0" prefWidth="194.0">
                             <children>
                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Point Actions:" />
-                                <RadioButton fx:id="editingModeNew" disable="true" mnemonicParsing="false" selected="true" text="New">
-                                    <toggleGroup>
-                                        <ToggleGroup fx:id="editingMode" />
-                                    </toggleGroup>
-                                </RadioButton>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Player radius" />
+                        <Slider fx:id="sliderPlayerRadius" blockIncrement="0.1" max="40.0" min="0.5" showTickLabels="true" showTickMarks="true" value="10.0" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Objective radius" />
+                        <Slider fx:id="sliderObjectiveRadius" blockIncrement="1.0" max="60.0" min="1.0" showTickLabels="true" showTickMarks="true" />
                             </children>
                         </VBox>
                     </children>
@@ -169,8 +167,8 @@
                 <Separator prefWidth="200.0" />
                 <GridPane prefHeight="227.0" prefWidth="1200.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="595.0" minWidth="10.0" prefWidth="192.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1066.0" minWidth="10.0" prefWidth="1008.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="617.0" minWidth="10.0" prefWidth="602.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1066.0" minWidth="10.0" prefWidth="598.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints maxHeight="181.0" minHeight="10.0" prefHeight="116.0" vgrow="SOMETIMES" />
@@ -178,7 +176,7 @@
                     <children>
                         <HBox prefHeight="105.0" prefWidth="600.0">
                             <children>
-                                <VBox prefHeight="200.0" prefWidth="100.0">
+                                <VBox prefHeight="181.0" prefWidth="231.0">
                                     <children>
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Raw Image:" />
                                         <Text fx:id="imageWidthTextRaw" strokeType="OUTSIDE" strokeWidth="0.0" text="Width:" />
@@ -194,6 +192,16 @@
                                         <Insets />
                                     </opaqueInsets>
                                 </VBox>
+                        <VBox prefHeight="181.0" prefWidth="268.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Selected Point Info:" />
+                              <Text fx:id="textPointInfoPosition" strokeType="OUTSIDE" strokeWidth="0.0" text="Position: " />
+                              <Text fx:id="textPointInfoTeam" strokeType="OUTSIDE" strokeWidth="0.0" text="Team: " />
+                              <Text fx:id="textPointInfoPlayer" strokeType="OUTSIDE" strokeWidth="0.0" text="Player: " />
+                              <Text fx:id="textPointInfoObjective" strokeType="OUTSIDE" strokeWidth="0.0" text="Objective:" />
+                              <Text fx:id="textPointInfoMatchType" strokeType="OUTSIDE" strokeWidth="0.0" text="Match Type: " />
+                           </children>
+                        </VBox>
                             </children>
                             <padding>
                                 <Insets left="5.0" />

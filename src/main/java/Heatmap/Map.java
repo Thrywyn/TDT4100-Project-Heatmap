@@ -110,9 +110,9 @@ public class Map implements ChoiceBoxToStringInterface {
         // be null, player can be null
         return playerDefencePoints.stream()
                 .filter(point -> point.getMatchType() == matchType || matchType == null)
-                .filter(point -> point.getTeam() == team)
+                .filter(point -> point.getTeam() == team || team == null)
                 .filter(point -> point.getPlayer() == player || player == null)
-                .filter(point -> point.getObjectivePoint() == objectivePoint)
+                .filter(point -> point.getObjectivePoint() == objectivePoint || objectivePoint == null)
                 .collect(ArrayList<PlayerDefencePoint>::new, ArrayList::add, ArrayList::addAll);
     }
 
@@ -176,6 +176,16 @@ public class Map implements ChoiceBoxToStringInterface {
 
     public void addPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
         this.playerDefencePoints.add(playerDefencePoint);
+    }
+
+    public void removeObjectivePoint(String name2) {
+        if (name2 == null) {
+            throw new IllegalArgumentException("ObjectivePoint name cannot be null");
+        }
+        if (!getObjectivePoints().stream().map(ObjectivePoint::getName).anyMatch(name -> name.equals(name2))) {
+            throw new IllegalArgumentException("ObjectivePoint does not exist");
+        }
+        this.objectivePoints.removeIf(point -> point.getName().equals(name2));
     }
 
 }

@@ -7,7 +7,10 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-public class Heatmap {
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+
+public class Heatmap implements Observable {
 
     // Variables
     private ArrayList<Map> maps = new ArrayList<>();
@@ -37,6 +40,22 @@ public class Heatmap {
     public String toString() {
         return "{" +
                 "}";
+    }
+
+    public void deleteTeam(Team team) {
+        if (teams.contains(team)) {
+            teams.remove(team);
+        } else {
+            throw new NoSuchElementException("Team not found");
+        }
+    }
+
+    public void deleteTeam(String name) {
+        if (teams.stream().filter(t -> t.getName().equals(name)).findFirst().isPresent()) {
+            deleteTeam(teams.stream().filter(t -> t.getName().equals(name)).findFirst().get());
+        } else {
+            throw new NoSuchElementException("Team " + name + " does not exist");
+        }
     }
 
     public PlayerDefencePoint getSelectedPlayerDefencePoint() {
@@ -350,11 +369,18 @@ public class Heatmap {
     }
 
     public Map getMap(String string) {
+        if (string == null) {
+            throw new IllegalArgumentException("String cannot be null");
+        }
+        if (!maps.stream().map(Map::getName).anyMatch(name -> name.equals(string))) {
+            throw new IllegalArgumentException("Map does not exist: " + string);
+        }
         return maps.stream().filter(m -> m.getName().equals(string)).findFirst().get();
     }
 
-    public Team getTeam(String string) {
-        return teams.stream().filter(t -> t.getName().equals(string)).findFirst().get();
+    public Team getTeam(String name) {
+        System.out.println("Searching for team:" + name);
+        return teams.stream().filter(t -> t.getName().equals(name)).findFirst().get();
     }
 
     public Player getPlayer(String string) {
@@ -400,6 +426,14 @@ public class Heatmap {
             throw new IllegalStateException("No team selected");
         }
         selectedTeam.addPlayer(new Player(name));
+    }
+
+    public void deleteMap(String name) {
+        if (maps.stream().filter(m -> m.getName().equals(name)).findFirst().isPresent()) {
+            maps.remove(maps.stream().filter(m -> m.getName().equals(name)).findFirst().get());
+        } else {
+            throw new IllegalArgumentException("Map was not found");
+        }
     }
 
 }
