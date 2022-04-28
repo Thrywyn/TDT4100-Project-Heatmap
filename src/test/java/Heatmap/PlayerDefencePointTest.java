@@ -91,4 +91,63 @@ public class PlayerDefencePointTest {
 		});
 
 	}
+
+	@Override
+	public String toString() {
+		return "PlayerDefencePointTest [map=" + map + ", matchType=" + matchType + ", obj=" + obj + ", player=" + player
+				+ ", playerDefencePoint=" + playerDefencePoint + ", team=" + team + ", x=" + x + ", y=" + y + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlayerDefencePointTest other = (PlayerDefencePointTest) obj;
+		if (map == null) {
+			if (other.map != null)
+				return false;
+		} else if (!map.equals(other.map))
+			return false;
+		if (matchType == null) {
+			if (other.matchType != null)
+				return false;
+		} else if (!matchType.equals(other.matchType))
+			return false;
+		if (this.obj == null) {
+			if (other.obj != null)
+				return false;
+		} else if (!this.obj.equals(other.obj))
+			return false;
+		if (player == null) {
+			if (other.player != null)
+				return false;
+		} else if (!player.equals(other.player))
+			return false;
+		if (playerDefencePoint == null) {
+			if (other.playerDefencePoint != null)
+				return false;
+		} else if (!playerDefencePoint.equals(other.playerDefencePoint))
+			return false;
+		if (team == null) {
+			if (other.team != null)
+				return false;
+		} else if (!team.equals(other.team))
+			return false;
+		if (x == null) {
+			if (other.x != null)
+				return false;
+		} else if (!x.equals(other.x))
+			return false;
+		if (y == null) {
+			if (other.y != null)
+				return false;
+		} else if (!y.equals(other.y))
+			return false;
+		return true;
+	}
+
 }

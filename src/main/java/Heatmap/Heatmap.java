@@ -1,16 +1,12 @@
 package Heatmap;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-
-public class Heatmap implements Observable {
+public class Heatmap {
 
     // Variables
     private ArrayList<Map> maps = new ArrayList<>();
@@ -38,8 +34,7 @@ public class Heatmap implements Observable {
 
     @Override
     public String toString() {
-        return "{" +
-                "}";
+        return "Heatmap [maps=" + maps + ", matchTypes=" + matchTypes + ", teams=" + teams + "]";
     }
 
     public void deleteTeam(Team team) {
@@ -486,6 +481,79 @@ public class Heatmap implements Observable {
             throw new IllegalStateException("No team selected");
         }
         selectedTeam.addPlayer(new Player(name));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((maps == null) ? 0 : maps.hashCode());
+        result = prime * result + ((matchTypes == null) ? 0 : matchTypes.hashCode());
+        result = prime * result + ((selectedMap == null) ? 0 : selectedMap.hashCode());
+        result = prime * result + ((selectedMatchType == null) ? 0 : selectedMatchType.hashCode());
+        result = prime * result + ((selectedObjectivePoint == null) ? 0 : selectedObjectivePoint.hashCode());
+        result = prime * result + ((selectedPlayer == null) ? 0 : selectedPlayer.hashCode());
+        result = prime * result + ((selectedPlayerDefencePoint == null) ? 0 : selectedPlayerDefencePoint.hashCode());
+        result = prime * result + ((selectedTeam == null) ? 0 : selectedTeam.hashCode());
+        result = prime * result + ((teams == null) ? 0 : teams.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Heatmap other = (Heatmap) obj;
+        if (maps == null) {
+            if (other.maps != null)
+                return false;
+        } else if (!maps.equals(other.maps))
+            return false;
+        if (matchTypes == null) {
+            if (other.matchTypes != null)
+                return false;
+        } else if (!matchTypes.equals(other.matchTypes))
+            return false;
+        if (selectedMap == null) {
+            if (other.selectedMap != null)
+                return false;
+        } else if (!selectedMap.equals(other.selectedMap))
+            return false;
+        if (selectedMatchType == null) {
+            if (other.selectedMatchType != null)
+                return false;
+        } else if (!selectedMatchType.equals(other.selectedMatchType))
+            return false;
+        if (selectedObjectivePoint == null) {
+            if (other.selectedObjectivePoint != null)
+                return false;
+        } else if (!selectedObjectivePoint.equals(other.selectedObjectivePoint))
+            return false;
+        if (selectedPlayer == null) {
+            if (other.selectedPlayer != null)
+                return false;
+        } else if (!selectedPlayer.equals(other.selectedPlayer))
+            return false;
+        if (selectedPlayerDefencePoint == null) {
+            if (other.selectedPlayerDefencePoint != null)
+                return false;
+        } else if (!selectedPlayerDefencePoint.equals(other.selectedPlayerDefencePoint))
+            return false;
+        if (selectedTeam == null) {
+            if (other.selectedTeam != null)
+                return false;
+        } else if (!selectedTeam.equals(other.selectedTeam))
+            return false;
+        if (teams == null) {
+            if (other.teams != null)
+                return false;
+        } else if (!teams.equals(other.teams))
+            return false;
+        return true;
     }
 
 }

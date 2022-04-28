@@ -33,12 +33,20 @@ public class PlayerDefencePoint extends Point {
     public PlayerDefencePoint(MatchType matchType, Map map, Team team, Player player, ObjectivePoint obj, Double x,
             Double y) {
         this(matchType, map, team, obj, x, y);
-        if (!team.getPlayers().contains(player)) {
-            if (player != null) {
-                throw new IllegalArgumentException("Player must be on the team");
+        if (team != null) {
+            if (!team.getPlayers().contains(player)) {
+                if (player != null) {
+                    throw new IllegalArgumentException("Player must be on the team");
+                }
             }
         }
         this.player = player;
+    }
+
+    public PlayerDefencePoint(MatchType matchType, Map map, Team team, Player player, ObjectivePoint obj, Double x,
+            Double y, LocalDateTime dateCreated) {
+        this(matchType, map, team, player, obj, x, y);
+        this.dateCreated = dateCreated;
     }
 
     public Team getTeam() {
@@ -77,7 +85,7 @@ public class PlayerDefencePoint extends Point {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
+        int result = 1;
         result = prime * result + ((matchType == null) ? 0 : matchType.hashCode());
         result = prime * result + ((objectivePoint == null) ? 0 : objectivePoint.hashCode());
         result = prime * result + ((player == null) ? 0 : player.hashCode());

@@ -1,6 +1,7 @@
 package Heatmap;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class Team implements ChoiceBoxToStringInterface {
 
@@ -76,6 +77,25 @@ public class Team implements ChoiceBoxToStringInterface {
         } else if (!players.equals(other.players))
             return false;
         return true;
+    }
+
+    public Player getPlayer(String string) {
+        if (string == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        // Stream to find player with same name
+        for (Player p : players) {
+            if (p.getName().equals(string)) {
+                return p;
+            }
+        }
+
+        throw new NoSuchElementException("Player does not exist");
+    }
+
+    @Override
+    public String toString() {
+        return "Team [name=" + name + ", players=" + players + "]";
     }
 
 }

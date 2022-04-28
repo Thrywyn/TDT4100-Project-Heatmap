@@ -50,4 +50,9 @@ public class Player implements ChoiceBoxToStringInterface {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Player [name=" + name + "]";
+    }
+
 }

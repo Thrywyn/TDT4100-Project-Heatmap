@@ -136,11 +136,6 @@ public class Map implements ChoiceBoxToStringInterface {
         this.objectivePoints.add(objectivePoint);
     }
 
-    @Override
-    public String toString() {
-        return "Map [name=" + name + ", height=" + height + ", width=" + width + "]";
-    }
-
     public static void main(String[] args) {
         Map bazaar;
         try {
@@ -178,6 +173,76 @@ public class Map implements ChoiceBoxToStringInterface {
             throw new IllegalArgumentException("ObjectivePoint does not exist");
         }
         this.objectivePoints.removeIf(point -> point.getName().equals(name2));
+    }
+
+    @Override
+    public String toString() {
+        return "Map [name=" + name + ", objectivePoints=" + objectivePoints + ", playerDefencePoints="
+                + playerDefencePoints + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((defaultPathPrefix == null) ? 0 : defaultPathPrefix.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(height);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((image == null) ? 0 : image.hashCode());
+        result = prime * result + ((imgFileName == null) ? 0 : imgFileName.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((objectivePoints == null) ? 0 : objectivePoints.hashCode());
+        result = prime * result + ((playerDefencePoints == null) ? 0 : playerDefencePoints.hashCode());
+        temp = Double.doubleToLongBits(width);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Map other = (Map) obj;
+        if (defaultPathPrefix == null) {
+            if (other.defaultPathPrefix != null)
+                return false;
+        } else if (!defaultPathPrefix.equals(other.defaultPathPrefix))
+            return false;
+        if (Double.doubleToLongBits(height) != Double.doubleToLongBits(other.height))
+            return false;
+        if (image == null) {
+            if (other.image != null)
+                return false;
+        } else if (!image.equals(other.image))
+            return false;
+        if (imgFileName == null) {
+            if (other.imgFileName != null)
+                return false;
+        } else if (!imgFileName.equals(other.imgFileName))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (objectivePoints == null) {
+            if (other.objectivePoints != null)
+                return false;
+        } else if (!objectivePoints.equals(other.objectivePoints))
+            return false;
+        if (playerDefencePoints == null) {
+            if (other.playerDefencePoints != null)
+                return false;
+        } else if (!playerDefencePoints.equals(other.playerDefencePoints))
+            return false;
+        if (Double.doubleToLongBits(width) != Double.doubleToLongBits(other.width))
+            return false;
+        return true;
     }
 
 }

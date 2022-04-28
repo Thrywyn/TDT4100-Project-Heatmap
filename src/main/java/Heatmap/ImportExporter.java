@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class ImportExporter implements IReadWrite {
 
-    public void write(String fileName, Heatmap heatmap) throws FileNotFoundException {
+    public  void write(String fileName, Heatmap heatmap) throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(getFile(fileName))) {
 
             writer.println("[Maps]");
@@ -179,6 +179,8 @@ public class ImportExporter implements IReadWrite {
                             }
                             heatmap.getMap(playerDefencePointInfo[0]).addPlayerDefencePoint(playerDefencePoint);
                         }
+                    } else {
+                        throw new IllegalArgumentException("Unknown line: " + line);
                     }
                 }
             }
@@ -194,7 +196,7 @@ public class ImportExporter implements IReadWrite {
         }
     }
 
-    private static File getFile(String filename) {
+    public static File getFile(String filename) {
         URL url = ImportExporter.class.getResource("saves");
         // System.out.println(url);
 

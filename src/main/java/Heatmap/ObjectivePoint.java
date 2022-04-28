@@ -1,5 +1,7 @@
 package Heatmap;
 
+import java.time.LocalDateTime;
+
 public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface {
 
     String name;
@@ -15,6 +17,11 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
         this.name = name;
     }
 
+    public ObjectivePoint(Map map, Double x, Double y, String name, LocalDateTime dateCreated) {
+        this(map, x, y, name);
+        this.dateCreated = dateCreated;
+    }
+
     @Override
     public String getChoiceBoxString() {
         return name;
@@ -27,7 +34,7 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
+        int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
@@ -47,6 +54,11 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ObjectivePoint [name=" + name + "]";
     }
 
 }
