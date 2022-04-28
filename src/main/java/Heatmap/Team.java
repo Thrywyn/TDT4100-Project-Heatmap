@@ -12,15 +12,10 @@ public class Team implements ChoiceBoxToStringInterface {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty");
+        if (!Contains.onlyOneorMoreAlphaNumericSpace(name)) {
+            throw new IllegalArgumentException("Name must be only one or more alphanumeric characters");
         }
         this.name = name;
-    }
-
-    public Team(String name, ArrayList<Player> players) {
-        this(name);
-        this.players = players;
     }
 
     public void addPlayer(Player player) {

@@ -15,6 +15,12 @@ public class Point {
         if (map == null) {
             throw new IllegalArgumentException("Map cannot be null");
         }
+        if (x == null) {
+            throw new IllegalArgumentException("X cannot be null");
+        }
+        if (y == null) {
+            throw new IllegalArgumentException("Y cannot be null");
+        }
         if (x > map.getWidth() || x < 0) {
             throw new IllegalArgumentException("X must be between 0 and " + map.getWidth());
         }

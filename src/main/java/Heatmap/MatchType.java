@@ -4,14 +4,14 @@ public class MatchType implements ChoiceBoxToStringInterface {
 
     private String name;
 
-    public MatchType(String type) {
-        if (type == null) {
-            throw new IllegalArgumentException("MatchType cannot be null");
+    public MatchType(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("MatchType name cannot be null");
         }
-        if (type.isEmpty()) {
-            throw new IllegalArgumentException("MatchType cannot be empty");
+        if (!Contains.onlyOneorMoreAlphaNumericSpace(name)) {
+            throw new IllegalArgumentException("Name must be only one or more alphanumeric characters");
         }
-        this.name = type;
+        this.name = name;
     }
 
     @Override

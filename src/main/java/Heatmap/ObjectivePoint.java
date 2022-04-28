@@ -6,6 +6,12 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
 
     public ObjectivePoint(Map map, Double x, Double y, String name) {
         super(map, x, y);
+        if (name == null) {
+            throw new IllegalArgumentException("Objective name cannot be null");
+        }
+        if (!Contains.onlyOneorMoreAlphaNumericSpace(name)) {
+            throw new IllegalArgumentException("Name must be only one or more alphanumeric characters");
+        }
         this.name = name;
     }
 

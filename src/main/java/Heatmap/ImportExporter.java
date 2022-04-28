@@ -2,6 +2,8 @@ package Heatmap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.time.LocalDate;
@@ -12,7 +14,6 @@ import java.util.Scanner;
 
 public class ImportExporter implements IReadWrite {
 
-    @Override
     public void write(String fileName, Heatmap heatmap) throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(getFile(fileName))) {
 
@@ -182,7 +183,7 @@ public class ImportExporter implements IReadWrite {
             }
 
             if (!heatmap.getMaps().isEmpty()) {
-                heatmap.setEditorSelectedMap(heatmap.getMaps().get(0).getName());
+                heatmap.setSelectedMap(heatmap.getMaps().get(0).getName());
             }
             if (!heatmap.getMatchTypes().isEmpty()) {
                 heatmap.setEditorMatchType(heatmap.getMatchTypes().get(0).getName());
@@ -208,5 +209,4 @@ public class ImportExporter implements IReadWrite {
 
         return file;
     }
-
 }

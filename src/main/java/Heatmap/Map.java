@@ -23,6 +23,14 @@ public class Map implements ChoiceBoxToStringInterface {
     ArrayList<ObjectivePoint> objectivePoints = new ArrayList<>();
 
     public Map(String name, String imgFileName) throws FileNotFoundException {
+        checkIfValidName(name);
+        if (imgFileName == null) {
+            throw new IllegalArgumentException("Image file name cannot be null");
+        }
+        if (imgFileName.isEmpty()) {
+            throw new IllegalArgumentException("Image file name cannot be empty");
+        }
+
         this.name = name;
         this.imgFileName = imgFileName;
 
@@ -37,13 +45,15 @@ public class Map implements ChoiceBoxToStringInterface {
             throw e;
         }
 
-        // try {
-        // Image fileImage = getFileImage(imgFileName);
-        // this.image = fileImage;
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
+    }
 
+    private void checkIfValidName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        if (!Contains.onlyOneorMoreAlphaNumericSpace(name)) {
+            throw new IllegalArgumentException("Name must be only one or more alphanumeric characters");
+        }
     }
 
     public void removePlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
@@ -52,19 +62,12 @@ public class Map implements ChoiceBoxToStringInterface {
                 .ifPresent(p -> playerDefencePoints.remove(p));
     }
 
-    private File getFile(String filename) {
-        return new File(Map.class.getResource("maps/").getFile() + filename);
-    }
-
-    private Image getFileImage(String filename) {
-        return new Image(getFile(filename).toURI().toString());
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
+        checkIfValidName(name);
         this.name = name;
     }
 
@@ -72,32 +75,12 @@ public class Map implements ChoiceBoxToStringInterface {
         return imgFileName;
     }
 
-    public void setImgFileName(String imgName) {
-        this.imgFileName = imgName;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
     public double getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public double getHeight() {
         return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
     public ArrayList<PlayerDefencePoint> getPlayerDefencePoints() {
@@ -157,12 +140,6 @@ public class Map implements ChoiceBoxToStringInterface {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        try {
-            Map arctic = new Map("Arctic", "arctic.jpg");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -175,6 +152,12 @@ public class Map implements ChoiceBoxToStringInterface {
     }
 
     public void addPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
+        if (playerDefencePoint == null) {
+            throw new IllegalArgumentException("PlayerDefencePoint cannot be null");
+        }
+        if (!getObjectivePoints().contains(playerDefencePoint.getObjectivePoint())) {
+            throw new IllegalArgumentException("ObjectivePoint does not exist in this map");
+        }
         this.playerDefencePoints.add(playerDefencePoint);
     }
 

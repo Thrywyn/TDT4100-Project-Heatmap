@@ -24,12 +24,18 @@ public class PlayerDefencePoint extends Point {
 
     public PlayerDefencePoint(MatchType matchType, Map map, Team team, ObjectivePoint obj, Double x, Double y) {
         this(map, team, obj, x, y);
+        if (!map.getObjectivePoints().contains(obj)) {
+            throw new IllegalArgumentException("Objective must be on map");
+        }
         this.matchType = matchType;
     }
 
     public PlayerDefencePoint(MatchType matchType, Map map, Team team, Player player, ObjectivePoint obj, Double x,
             Double y) {
         this(matchType, map, team, obj, x, y);
+        if (!team.getPlayers().contains(player)) {
+            throw new IllegalArgumentException("Player must be on the team");
+        }
         this.player = player;
     }
 

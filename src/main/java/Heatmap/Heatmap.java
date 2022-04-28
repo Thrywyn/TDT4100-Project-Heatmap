@@ -43,6 +43,9 @@ public class Heatmap implements Observable {
     }
 
     public void deleteTeam(Team team) {
+        if (team == null) {
+            throw new IllegalArgumentException("Team cannot be null");
+        }
         if (teams.contains(team)) {
             teams.remove(team);
         } else {
@@ -51,6 +54,9 @@ public class Heatmap implements Observable {
     }
 
     public void deleteTeam(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Team name cannot be null");
+        }
         if (teams.stream().filter(t -> t.getName().equals(name)).findFirst().isPresent()) {
             deleteTeam(teams.stream().filter(t -> t.getName().equals(name)).findFirst().get());
         } else {
@@ -62,7 +68,7 @@ public class Heatmap implements Observable {
         return selectedPlayerDefencePoint;
     }
 
-    public void setEditorSelectedPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
+    public void setSelectedPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
         this.selectedPlayerDefencePoint = playerDefencePoint;
     }
 
@@ -72,7 +78,7 @@ public class Heatmap implements Observable {
         }
     }
 
-    public void setEditorSelectedPlayer(Player player) {
+    public void setSelectedPlayer(Player player) {
         this.selectedPlayer = player;
     }
 
@@ -93,7 +99,8 @@ public class Heatmap implements Observable {
 
         PlayerDefencePoint closestPlayer = null;
         double closestDistance = Double.MAX_VALUE;
-        for (PlayerDefencePoint playerPoint : getPlayerDefencePointsFromSelection()) {
+        ArrayList<PlayerDefencePoint> selectedPoints = getPlayerDefencePointsFromSelection();
+        for (PlayerDefencePoint playerPoint : selectedPoints) {
             double distance = Math.sqrt(Math.pow(playerPoint.getX() - x, 2) + Math.pow(playerPoint.getY() - y, 2));
             if (distance < closestDistance) {
                 closestDistance = distance;
@@ -170,7 +177,7 @@ public class Heatmap implements Observable {
 
     // Editor Methods
 
-    public void setEditorSelectedMap(String mapName) {
+    public void setSelectedMap(String mapName) {
         try {
             this.selectedMap = maps.stream().filter(map -> map.getName().equals(mapName)).collect(Collectors.toList())
                     .get(0);

@@ -10,8 +10,8 @@ public class Player implements ChoiceBoxToStringInterface {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty");
+        if (!Contains.onlyOneorMoreAlphaNumericSpace(name)) {
+            throw new IllegalArgumentException("Name must be only one or more alphanumeric characters");
         }
         this.name = name;
     }

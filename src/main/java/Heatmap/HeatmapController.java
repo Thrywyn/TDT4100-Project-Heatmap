@@ -192,8 +192,9 @@ public class HeatmapController {
 
     private void updatePointInformationText() {
         if (heatmap.getSelectedPlayerDefencePoint() != null) {
-            textPointInfoPosition.setText("Position: " + heatmap.getSelectedPlayerDefencePoint().getX() + ","
-                    + heatmap.getSelectedPlayerDefencePoint().getY());
+            textPointInfoPosition
+                    .setText("Position: " + Math.round(heatmap.getSelectedPlayerDefencePoint().getX()) + ","
+                            + Math.round(heatmap.getSelectedPlayerDefencePoint().getY()));
             textPointInfoTeam.setText("Team: " + heatmap.getSelectedPlayerDefencePoint().getTeam().getName());
             textPointInfoObjective
                     .setText("Objective: " + heatmap.getSelectedPlayerDefencePoint().getObjectivePoint().getName());
@@ -260,7 +261,7 @@ public class HeatmapController {
 
             TextInputDialog dialog2 = new TextInputDialog("Objective Position");
             dialog2.setTitle("New Objective");
-            dialog2.setHeaderText("Enter a position for the new objective in format x,y");
+            dialog2.setHeaderText("Enter a raw position for the new objective in format x,y");
             dialog2.setContentText("Objective Position:");
 
             Optional<String> positionObjective = dialog2.showAndWait();
@@ -272,7 +273,7 @@ public class HeatmapController {
                     refreshCanvasDrawings();
                     objectiveChoiceBox.getSelectionModel().select(nameObjective.get());
                 } catch (IllegalArgumentException ex) {
-                    displayException(ex, "Invalid Objective Position");
+                    displayException(ex);
                 }
             }
         });
@@ -331,23 +332,27 @@ public class HeatmapController {
         dialog.setHeaderText("What is the filename?");
         dialog.setContentText("Name:");
 
-        try {
-            heatmap = importExporter.read(dialog.showAndWait().get());
-            heatmap.setEditorSelectedMap("Bazaar");
-            refillMapChoiceBox();
-            refillTeamChoiceBox();
-            refillObjectiveChoiceBox();
-            refillMatchTypeChoiceBox();
-            refillPlayerChoiceBox();
-            updateImageInformationAndCanvas();
-            updateCanvasPaneSize();
-            reSetImageNode();
-            if (heatmap.getSelectedMap() != null) {
-                mapChoiceBox.getSelectionModel().select(heatmap.getSelectedMap().getChoiceBoxString());
-            }
+        Optional<String> result = dialog.showAndWait();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (result.isPresent()) {
+            try {
+                heatmap = importExporter.read(result.get());
+                heatmap.setSelectedMap("Bazaar");
+                refillMapChoiceBox();
+                refillTeamChoiceBox();
+                refillObjectiveChoiceBox();
+                refillMatchTypeChoiceBox();
+                refillPlayerChoiceBox();
+                updateImageInformationAndCanvas();
+                updateCanvasPaneSize();
+                reSetImageNode();
+                if (heatmap.getSelectedMap() != null) {
+                    mapChoiceBox.getSelectionModel().select(heatmap.getSelectedMap().getChoiceBoxString());
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -405,11 +410,11 @@ public class HeatmapController {
         pointListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 System.out.println("Selected: " + newSelection);
-                heatmap.setEditorSelectedPlayerDefencePoint(newSelection);
+                heatmap.setSelectedPlayerDefencePoint(newSelection);
                 editDeleteButton.setDisable(false);
             } else if (newSelection == null) {
                 System.out.println("Selected: null");
-                heatmap.setEditorSelectedPlayerDefencePoint(null);
+                heatmap.setSelectedPlayerDefencePoint(null);
                 editDeleteButton.setDisable(true);
             }
             updatePointInformationText();
@@ -433,7 +438,7 @@ public class HeatmapController {
     private void reInitialize() {
 
         // Image
-        heatmap.setEditorSelectedMap("Bazaar");
+        heatmap.setSelectedMap("Bazaar");
 
         // Canvas
         updateCanvasPaneSize();
@@ -676,9 +681,9 @@ public class HeatmapController {
     private void updatePlayerPointAlphaValue() {
         double overLapAmount = heatmap.calculateMaxAmountOfOverlappingLayers(imageBoundWidth, imageBoundHeight,
                 playerPointRadius);
-        System.out.println("Max overlap amount:" + overLapAmount);
+        // System.out.println("Max overlap amount:" + overLapAmount);
         double calculatedAlpha = heatmap.calculateAlphaValuesFromMaxOverlap(overLapAmount);
-        System.out.println("Alpha value: " + calculatedAlpha);
+        // System.out.println("Alpha value: " + calculatedAlpha);
         playerPointColor = Color.rgb(255, 0, 0, calculatedAlpha);
     }
 
@@ -712,7 +717,7 @@ public class HeatmapController {
 
     private void setDefaultImage() {
         imageDisplay.setImage(imageNode);
-        heatmap.setEditorSelectedMap("Bazaar");
+        heatmap.setSelectedMap("Bazaar");
     }
 
     private void updateImageInformation() {
@@ -837,7 +842,7 @@ public class HeatmapController {
             if (newVal == null) {
                 return;
             }
-            heatmap.setEditorSelectedMap(newVal);
+            heatmap.setSelectedMap(newVal);
             reSetImageNode();
             updateImageInformationAndCanvas();
             refreshCanvasDrawings();
