@@ -43,12 +43,6 @@ public class PlayerDefencePoint extends Point {
         this.player = player;
     }
 
-    public PlayerDefencePoint(MatchType matchType, Map map, Team team, Player player, ObjectivePoint obj, Double x,
-            Double y, LocalDateTime dateCreated) {
-        this(matchType, map, team, player, obj, x, y);
-        this.dateCreated = dateCreated;
-    }
-
     public Team getTeam() {
         return this.team;
     }
@@ -67,19 +61,8 @@ public class PlayerDefencePoint extends Point {
 
     @Override
     public String toString() {
-        String returnString = "";
-        returnString += "x: " + Math.round(this.getX()) + " y: " + Math.round(this.getY());
-        returnString += ", Map: " + this.getMap().getName();
-        returnString += ", Team: " + this.getTeam().getName();
-        returnString += ", Objective: " + this.getObjectivePoint().getName();
-        if (this.getPlayer() != null) {
-            returnString += ", Player: " + this.getPlayer().getName();
-        }
-        if (this.getMatchType() != null) {
-            returnString += ", MatchType: " + this.getMatchType().toString();
-        }
-        returnString += "]";
-        return returnString;
+        return "PlayerDefencePoint [matchType=" + matchType + ", objectivePoint=" + objectivePoint + ", player="
+                + player + ", team=" + team + "]";
     }
 
     @Override
@@ -97,11 +80,27 @@ public class PlayerDefencePoint extends Point {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!super.equals(obj))
-            return false;
         if (getClass() != obj.getClass())
             return false;
         PlayerDefencePoint other = (PlayerDefencePoint) obj;
+
+        // Custom code
+        if (x == null) {
+            if (other.x != null)
+                return false;
+        } else if (!x.equals(other.x))
+            return false;
+        if (y == null) {
+            if (other.y != null)
+                return false;
+        } else if (!y.equals(other.y))
+            return false;
+        if (map == null) {
+            if (other.map != null)
+                return false;
+        } else if (!map.getName().equals(other.map.getName()))
+            return false;
+
         if (matchType == null) {
             if (other.matchType != null)
                 return false;
@@ -131,10 +130,6 @@ public class PlayerDefencePoint extends Point {
 
     public void setMatchType(MatchType matchType2) {
         this.matchType = matchType2;
-    }
-
-    public void setDateCreated(LocalDateTime parse) {
-        this.dateCreated = parse;
     }
 
 }

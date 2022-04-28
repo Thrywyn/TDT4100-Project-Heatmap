@@ -177,8 +177,9 @@ public class Map implements ChoiceBoxToStringInterface {
 
     @Override
     public String toString() {
-        return "Map [name=" + name + ", objectivePoints=" + objectivePoints + ", playerDefencePoints="
-                + playerDefencePoints + "]";
+        return "Map [defaultPathPrefix=" + defaultPathPrefix + ", height=" + height + ", image=" + image
+                + ", imgFileName=" + imgFileName + ", name=" + name + ", objectivePoints=" + objectivePoints
+                + ", playerDefencePoints=" + playerDefencePoints + ", width=" + width + "]";
     }
 
     @Override
@@ -189,7 +190,6 @@ public class Map implements ChoiceBoxToStringInterface {
         long temp;
         temp = Double.doubleToLongBits(height);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((image == null) ? 0 : image.hashCode());
         result = prime * result + ((imgFileName == null) ? 0 : imgFileName.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((objectivePoints == null) ? 0 : objectivePoints.hashCode());
@@ -214,11 +214,6 @@ public class Map implements ChoiceBoxToStringInterface {
         } else if (!defaultPathPrefix.equals(other.defaultPathPrefix))
             return false;
         if (Double.doubleToLongBits(height) != Double.doubleToLongBits(other.height))
-            return false;
-        if (image == null) {
-            if (other.image != null)
-                return false;
-        } else if (!image.equals(other.image))
             return false;
         if (imgFileName == null) {
             if (other.imgFileName != null)

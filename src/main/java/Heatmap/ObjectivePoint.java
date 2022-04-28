@@ -17,11 +17,6 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
         this.name = name;
     }
 
-    public ObjectivePoint(Map map, Double x, Double y, String name, LocalDateTime dateCreated) {
-        this(map, x, y, name);
-        this.dateCreated = dateCreated;
-    }
-
     @Override
     public String getChoiceBoxString() {
         return name;
@@ -43,11 +38,23 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!super.equals(obj))
-            return false;
+
         if (getClass() != obj.getClass())
             return false;
         ObjectivePoint other = (ObjectivePoint) obj;
+
+        // Custom code
+        if (x == null) {
+            if (other.x != null)
+                return false;
+        } else if (!x.equals(other.x))
+            return false;
+        if (y == null) {
+            if (other.y != null)
+                return false;
+        } else if (!y.equals(other.y))
+            return false;
+
         if (name == null) {
             if (other.name != null)
                 return false;

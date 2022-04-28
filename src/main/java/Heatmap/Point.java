@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 public class Point {
 
     Map map;
-    LocalDateTime dateCreated;
 
     Double x;
     Double y;
@@ -30,11 +29,6 @@ public class Point {
         this.map = map;
         this.x = x;
         this.y = y;
-        this.dateCreated = LocalDateTime.now();
-    }
-
-    public LocalDateTime getDateCreated() {
-        return this.dateCreated;
     }
 
     public Map getMap() {
@@ -61,7 +55,6 @@ public class Point {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((dateCreated == null) ? 0 : dateCreated.hashCode());
         result = prime * result + ((map == null) ? 0 : map.hashCode());
         result = prime * result + ((x == null) ? 0 : x.hashCode());
         result = prime * result + ((y == null) ? 0 : y.hashCode());
@@ -77,11 +70,6 @@ public class Point {
         if (getClass() != obj.getClass())
             return false;
         Point other = (Point) obj;
-        if (dateCreated == null) {
-            if (other.dateCreated != null)
-                return false;
-        } else if (!dateCreated.equals(other.dateCreated))
-            return false;
         if (map == null) {
             if (other.map != null)
                 return false;
@@ -98,6 +86,11 @@ public class Point {
         } else if (!y.equals(other.y))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Point [map=" + map + ", x=" + x + ", y=" + y + "]";
     }
 
 }

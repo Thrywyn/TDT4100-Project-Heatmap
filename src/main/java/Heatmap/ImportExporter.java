@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class ImportExporter implements IReadWrite {
 
-    public  void write(String fileName, Heatmap heatmap) throws FileNotFoundException {
+    public void write(String fileName, Heatmap heatmap) throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(getFile(fileName))) {
 
             writer.println("[Maps]");
@@ -56,8 +56,7 @@ public class ImportExporter implements IReadWrite {
                     sb.append(pp.getTeam().getName()).append(";");
                     sb.append(pp.getObjectivePoint().getName()).append(";");
                     sb.append(pp.getX()).append(";");
-                    sb.append(pp.getY()).append(";");
-                    sb.append(pp.getDateCreated().toString());
+                    sb.append(pp.getY());
                     if (pp.getPlayer() != null) {
                         sb.append(";").append(pp.getPlayer().getName());
                     } else {
@@ -168,14 +167,12 @@ public class ImportExporter implements IReadWrite {
                                             playerDefencePointInfo[2]),
                                     Double.parseDouble(playerDefencePointInfo[3]),
                                     Double.parseDouble(playerDefencePointInfo[4]));
-                            playerDefencePoint.setDateCreated(
-                                    LocalDateTime.parse(playerDefencePointInfo[5]));
-                            if (!playerDefencePointInfo[6].equals("null")) {
+                            if (!playerDefencePointInfo[5].equals("null")) {
                                 playerDefencePoint.setPlayer(
-                                        heatmap.getPlayer(playerDefencePointInfo[6], playerDefencePointInfo[1]));
+                                        heatmap.getPlayer(playerDefencePointInfo[5], playerDefencePointInfo[1]));
                             }
-                            if (!playerDefencePointInfo[7].equals("null")) {
-                                playerDefencePoint.setMatchType(heatmap.getMatchType(playerDefencePointInfo[7]));
+                            if (!playerDefencePointInfo[6].equals("null")) {
+                                playerDefencePoint.setMatchType(heatmap.getMatchType(playerDefencePointInfo[6]));
                             }
                             heatmap.getMap(playerDefencePointInfo[0]).addPlayerDefencePoint(playerDefencePoint);
                         }
@@ -193,6 +190,8 @@ public class ImportExporter implements IReadWrite {
             }
 
             return heatmap;
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Error while reading file: " + file.getAbsolutePath(), ex);
         }
     }
 

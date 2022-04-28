@@ -34,7 +34,10 @@ public class Heatmap {
 
     @Override
     public String toString() {
-        return "Heatmap [maps=" + maps + ", matchTypes=" + matchTypes + ", teams=" + teams + "]";
+        return "Heatmap [maps=" + maps + ", matchTypes=" + matchTypes + ", selectedMap=" + selectedMap
+                + ", selectedMatchType=" + selectedMatchType + ", selectedObjectivePoint=" + selectedObjectivePoint
+                + ", selectedPlayer=" + selectedPlayer + ", selectedPlayerDefencePoint=" + selectedPlayerDefencePoint
+                + ", selectedTeam=" + selectedTeam + ", teams=" + teams + "]";
     }
 
     public void deleteTeam(Team team) {

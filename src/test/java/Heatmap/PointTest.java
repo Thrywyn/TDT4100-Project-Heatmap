@@ -23,10 +23,6 @@ public class PointTest {
         assertEquals(100.0, point.getX(), "X should be 100.0");
         // Test y
         assertEquals(100.0, point.getY(), "Y should be 100.0");
-        // Test dateCreated
-        assertNotNull(point.getDateCreated(), "DateCreated should not be null");
-        // Check date is same as today
-        assertEquals(LocalDate.now(), point.getDateCreated().toLocalDate(), "DateCreated should be today");
 
         // Test invalid x
         assertThrows(IllegalArgumentException.class, () -> {
