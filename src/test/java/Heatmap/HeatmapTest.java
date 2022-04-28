@@ -335,7 +335,6 @@ public class HeatmapTest {
 
 	@Test
 	public void shouldGetPlayer() {
-		// TODO: initialize args
 		String name = "TEST";
 		Player player = new Player(name);
 		Team team = new Team("team");
@@ -359,7 +358,6 @@ public class HeatmapTest {
 
 	@Test
 	public void shouldGetMatchType() {
-		// TODO: initialize args
 		String name = "TEST";
 		MatchType matchType = new MatchType(name);
 		heatmap.addMatchType(matchType);
@@ -400,7 +398,6 @@ public class HeatmapTest {
 
 	@Test
 	public void shouldAddObjective() {
-		// TODO: initialize args
 		String name = "TEST";
 		String pos = "10,10";
 

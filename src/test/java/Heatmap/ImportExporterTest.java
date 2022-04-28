@@ -7,16 +7,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class ImportExporterTest {
-
-	private ImportExporter importExporter;
 
 	private static final String valid_file_content = """
 			[Maps]
@@ -72,10 +68,6 @@ public class ImportExporterTest {
 			[PlayerDefencePoints]
 			Bazaar;Bossfight;;400;400;;
 			""".replaceAll("\\R", System.getProperty("line.separator"));
-
-	private Heatmap getStandardHeatmap() {
-		return new Heatmap();
-	}
 
 	private Heatmap getFilledHeatmap() {
 		Heatmap heatmap = new Heatmap();

@@ -3,17 +3,9 @@ package Heatmap;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ContainsTest {
-
-	private Contains contains;
-
-	@BeforeEach
-	public void setup() {
-		this.contains = new Contains();
-	}
 
 	@Test
 	public void shouldOnlyOneorMoreAlphaNumericSpace() {

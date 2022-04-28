@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileNotFoundException;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,5 @@ public class ObjectivePointTest {
             new ObjectivePoint(bazaar, 100.0, 100.0, "");
         });
     }
-
-    
 
 }
