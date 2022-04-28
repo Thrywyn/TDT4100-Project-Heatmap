@@ -1,8 +1,6 @@
 package Heatmap;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 public interface IReadWrite {
 

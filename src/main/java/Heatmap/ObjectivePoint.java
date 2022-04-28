@@ -1,7 +1,5 @@
 package Heatmap;
 
-import java.time.LocalDateTime;
-
 public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface {
 
     String name;

@@ -1,7 +1,5 @@
 package Heatmap;
 
-import java.util.ArrayList;
-
 public class Player implements ChoiceBoxToStringInterface {
 
     private String name;

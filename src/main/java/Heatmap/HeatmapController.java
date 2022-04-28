@@ -1,21 +1,13 @@
 package Heatmap;
 
 import java.io.IOException;
-import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
@@ -36,8 +28,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -120,13 +110,9 @@ public class HeatmapController {
     // Absolute values
     private Double absoluteMouseX;
     private Double absoluteMouseY;
-    private String absoluteMouseXString;
-    private String absoluteMouseYString;
     // Relative values
     private Double relativeMouseX;
     private Double relativeMouseY;
-    private String relativeMouseXString;
-    private String relativeMouseYString;
 
     private Double actualImageCoordinateX;
     private Double actualImageCoordinateY;
@@ -134,10 +120,6 @@ public class HeatmapController {
     // Image values
     private Double imageBoundWidth = 0.0;
     private Double imageBoundHeight = 0.0;
-
-    // Editor State
-    private Toggle selectedToggleButton;
-    private String editorModeString;
 
     // Canvas Values
     private CanvasPane imageDisplayCanvasPane;
@@ -152,7 +134,6 @@ public class HeatmapController {
 
     // FXML Objects
     private Image imageNode;
-    private Scene scene;
     private Stage stage;
 
     // Misc
@@ -445,39 +426,6 @@ public class HeatmapController {
         });
     }
 
-    private void reInitialize() {
-
-        // Image
-        heatmap.setSelectedMap("Bazaar");
-
-        // Canvas
-        updateCanvasPaneSize();
-
-        // Editor Settings
-        clearChoiceBoxes();
-
-        fillChoiceBoxes();
-        playerChoiceBox.getItems().clear();
-        objectiveChoiceBox.getItems().clear();
-
-        setDefaultChoiceBoxOptions();
-
-        clearListView();
-        fillListView();
-    }
-
-    private void clearListView() {
-        pointListView.getItems().clear();
-    }
-
-    private void clearChoiceBoxes() {
-        teamChoiceBox.getItems().clear();
-        objectiveChoiceBox.getItems().clear();
-        mapChoiceBox.getItems().clear();
-        matchChoiceBox.getItems().clear();
-        playerChoiceBox.getItems().clear();
-    }
-
     private void refillTeamChoiceBox() {
         teamChoiceBox.getItems().clear();
         fillTeamChoiceBox();
@@ -569,8 +517,6 @@ public class HeatmapController {
         // Set absolute coordinates
         absoluteMouseX = mouseEvent.getSceneX();
         absoluteMouseY = mouseEvent.getSceneY();
-        absoluteMouseXString = Double.toString(absoluteMouseX);
-        absoluteMouseYString = Double.toString(absoluteMouseY);
         // Get bounds to calculate relative coords
         Bounds boundsInScene = imageDisplay.localToScene(imageDisplay.getBoundsInLocal());
         Double imageX = boundsInScene.getMinX();
@@ -578,8 +524,6 @@ public class HeatmapController {
         // Set relative coordinates, relative to ImageNode/Pane
         relativeMouseX = absoluteMouseX - imageX;
         relativeMouseY = absoluteMouseY - imageY;
-        relativeMouseXString = Double.toString(relativeMouseX);
-        relativeMouseYString = Double.toString(relativeMouseY);
 
         // Set Image Relative values, relative to Raw Image
         actualImageCoordinateX = relativeMouseX
@@ -748,7 +692,6 @@ public class HeatmapController {
 
     // Sets scene
     public void setScene() {
-        scene = clickXYText.getScene();
     }
 
     // Sets Stage Event listener to listen for changes in width/height on window

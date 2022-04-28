@@ -1,8 +1,5 @@
 package Heatmap;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 public class Point {
 
     Map map;
