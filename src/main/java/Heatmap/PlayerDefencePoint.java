@@ -34,7 +34,9 @@ public class PlayerDefencePoint extends Point {
             Double y) {
         this(matchType, map, team, obj, x, y);
         if (!team.getPlayers().contains(player)) {
-            throw new IllegalArgumentException("Player must be on the team");
+            if (player != null) {
+                throw new IllegalArgumentException("Player must be on the team");
+            }
         }
         this.player = player;
     }

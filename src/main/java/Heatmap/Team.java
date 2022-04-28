@@ -25,6 +25,12 @@ public class Team implements ChoiceBoxToStringInterface {
         if (players.contains(player)) {
             throw new IllegalArgumentException("Player already exists");
         }
+        // Check if player with same name exists
+        for (Player p : players) {
+            if (p.getName().equals(player.getName())) {
+                throw new IllegalArgumentException("Player already exists");
+            }
+        }
         players.add(player);
     }
 

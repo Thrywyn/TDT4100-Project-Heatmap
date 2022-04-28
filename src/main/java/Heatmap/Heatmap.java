@@ -183,7 +183,8 @@ public class Heatmap implements Observable {
                     .get(0);
         } catch (NoSuchElementException e) {
             System.out.println("Map not found");
-            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Map not found");
         }
     }
 
@@ -194,7 +195,7 @@ public class Heatmap implements Observable {
             this.selectedMatchType = matchTypes.stream()
                     .filter(matchType -> matchType.getChoiceBoxString().equals(matchTypeName))
                     .findAny()
-                    .orElseThrow(() -> new IllegalArgumentException("MatchType not found: " + matchTypeName));
+                    .orElseThrow(() -> new NoSuchElementException("MatchType not found: " + matchTypeName));
         }
     }
 
@@ -205,7 +206,7 @@ public class Heatmap implements Observable {
             this.selectedPlayer = selectedTeam.getPlayers().stream()
                     .filter(player -> player.getChoiceBoxString().equals(playerName))
                     .findAny()
-                    .orElseThrow(() -> new IllegalArgumentException("Player not found: " + playerName));
+                    .orElseThrow(() -> new NoSuchElementException("Player not found: " + playerName));
         }
     }
 
@@ -216,7 +217,7 @@ public class Heatmap implements Observable {
             this.selectedTeam = teams.stream()
                     .filter(team -> team.getChoiceBoxString().equals(teamName))
                     .findAny()
-                    .orElseThrow(() -> new IllegalArgumentException("Team not found: " + teamName));
+                    .orElseThrow(() -> new NoSuchElementException("Team not found: " + teamName));
         }
     }
 
@@ -227,7 +228,7 @@ public class Heatmap implements Observable {
             this.selectedObjectivePoint = selectedMap.getObjectivePoints().stream()
                     .filter(objectivePoint -> objectivePoint.getChoiceBoxString().equals(objectivePointName))
                     .findAny()
-                    .orElseThrow(() -> new IllegalArgumentException("ObjectivePoint not found: " + objectivePointName));
+                    .orElseThrow(() -> new NoSuchElementException("ObjectivePoint not found: " + objectivePointName));
         }
     }
 
@@ -268,6 +269,12 @@ public class Heatmap implements Observable {
 
     public HashMap<PlayerDefencePoint, PlayerDefencePoint> getPlayerDefencePointMapAbsToRel(double canvasWidth,
             double canvasHeight) {
+        if (canvasWidth == 0 || canvasHeight == 0) {
+            throw new IllegalArgumentException("Canvas width or height cannot be 0");
+        }
+        if (canvasWidth < 0 || canvasHeight < 0) {
+            throw new IllegalArgumentException("Canvas width or height cannot be negative");
+        }
         HashMap<PlayerDefencePoint, PlayerDefencePoint> map = new HashMap<>();
         for (PlayerDefencePoint p : getPlayerDefencePointsFromSelection()) {
             map.put(p, translatePointToRelative(p, canvasWidth, canvasHeight));
@@ -275,21 +282,33 @@ public class Heatmap implements Observable {
         return map;
     }
 
-    public PlayerDefencePoint translatePointToRelative(PlayerDefencePoint p, double canvasWidth,
+    private PlayerDefencePoint translatePointToRelative(PlayerDefencePoint p, double canvasWidth,
             double canvasHeight) {
         if (p == null) {
             throw new IllegalArgumentException("PlayerDefencePoint cannot be null");
         }
+        if (canvasWidth == 0 || canvasHeight == 0) {
+            throw new IllegalArgumentException("Canvas width or height cannot be 0");
+        }
+        if (canvasWidth < 0 || canvasHeight < 0) {
+            throw new IllegalArgumentException("Canvas width or height cannot be negative");
+        }
         return new PlayerDefencePoint(p.getMap(), p.getTeam(), p.getObjectivePoint(),
-                p.getX() / selectedMap.getWidth() * canvasWidth,
-                p.getY() / selectedMap.getHeight() * canvasHeight);
+                p.getX() / p.getMap().getWidth() * canvasWidth,
+                p.getY() / p.getMap().getHeight() * canvasHeight);
     }
 
     // Return new array of ObjectivePoint with coordinates scaled to canvas size
     public ArrayList<ObjectivePoint> getRelativeObjectivePoints(double canvasWidth, double canvasHeight) {
+        if (canvasWidth == 0 || canvasHeight == 0) {
+            throw new IllegalArgumentException("Canvas width or height cannot be 0");
+        }
+        if (canvasWidth < 0 || canvasHeight < 0) {
+            throw new IllegalArgumentException("Canvas width or height cannot be negative");
+        }
         return getObjectivePointsFromSelection().stream()
-                .map(p -> new ObjectivePoint(p.getMap(), p.getX() / selectedMap.getWidth() * canvasWidth,
-                        p.getY() / selectedMap.getHeight() * canvasHeight, p.getName()))
+                .map(p -> new ObjectivePoint(p.getMap(), p.getX() / p.getMap().getWidth() * canvasWidth,
+                        p.getY() / p.getMap().getHeight() * canvasHeight, p.getName()))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -300,39 +319,46 @@ public class Heatmap implements Observable {
         // arrayOfOverlappingPoints
         for (PlayerDefencePoint p : getRelativePlayerDefencePoints(canvasWidth, canvasHeight)) {
             for (PlayerDefencePoint p2 : getRelativePlayerDefencePoints(canvasWidth, canvasHeight)) {
-                if (!p.equals(p2)) {
-                    if (isOverlapping(p, p2, circleRadius)) {
-                        if (overlappingPointsMap.containsKey(p)) {
-                            boolean allOverlapping = true;
-                            for (PlayerDefencePoint p3 : overlappingPointsMap.get(p)) {
-                                if (!isOverlapping(p2, p3, circleRadius)) {
-                                    allOverlapping = false;
-                                }
+                if (isOverlapping(p, p2, circleRadius)) {
+                    if (overlappingPointsMap.containsKey(p)) {
+                        boolean allOverlapping = true;
+                        for (PlayerDefencePoint p3 : overlappingPointsMap.get(p)) {
+                            if (!isOverlapping(p2, p3, circleRadius)) {
+                                allOverlapping = false;
                             }
-                            if (allOverlapping) {
-                                overlappingPointsMap.get(p).add(p2);
-                            }
-                        } else {
-                            HashSet<PlayerDefencePoint> set = new HashSet<PlayerDefencePoint>();
-                            set.add(p2);
-                            overlappingPointsMap.put(p, set);
                         }
+                        if (allOverlapping) {
+                            overlappingPointsMap.get(p).add(p2);
+                        }
+                    } else {
+                        HashSet<PlayerDefencePoint> set = new HashSet<PlayerDefencePoint>();
+                        set.add(p2);
+                        overlappingPointsMap.put(p, set);
                     }
 
                 }
             }
         }
-
+        // System.out.println("Overlapping points: " + overlappingPointsMap);
         // Get the maximum length HashSet from overlappingPointsMap
         double maxAmountOfOverlappingLayers = overlappingPointsMap.values().stream().mapToInt(HashSet::size).max()
                 .orElse(0);
         // System.out.println(overlappingPointsMap);
-        return maxAmountOfOverlappingLayers + 1;
+        return maxAmountOfOverlappingLayers;
 
     }
 
-    public double calculateAlphaValuesFromMaxOverlap(double maxLayersOverlapping) {
-        double alphaToApproach = 0.75;
+    public double calculateAlphaValuesFromMaxOverlap(double maxLayersOverlapping, double alphaToApproach) {
+        // Calculate alpha values from max amount of overlapping layers
+        if (alphaToApproach < 0 || alphaToApproach > 1) {
+            throw new IllegalArgumentException("Alpha to approach must be between 0 and 1");
+        }
+        if (maxLayersOverlapping < 0) {
+            throw new IllegalArgumentException("Max layers overlapping must be positive");
+        }
+        if (maxLayersOverlapping == 0) {
+            return alphaToApproach;
+        }
         double alpha = 1 - Math.pow(1 - alphaToApproach, 1 / maxLayersOverlapping);
         return alpha;
     }
@@ -341,7 +367,7 @@ public class Heatmap implements Observable {
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) < pointRadius * 2;
     }
 
-    private boolean isOverlapping(Point p1, Point p2, double pointRadius) {
+    public boolean isOverlapping(Point p1, Point p2, double pointRadius) {
         return isOverlapping(p1.getX(), p1.getY(), p2.getX(), p2.getY(), pointRadius);
     }
 
@@ -372,6 +398,10 @@ public class Heatmap implements Observable {
         if (matchTypes.contains(matchType)) {
             throw new IllegalArgumentException("MatchType already exists");
         }
+        // Check if matchType name already exists
+        if (matchTypes.stream().map(MatchType::getName).anyMatch(name -> name.equals(matchType.getName()))) {
+            throw new IllegalArgumentException("MatchType name already exists");
+        }
         matchTypes.add(matchType);
     }
 
@@ -380,34 +410,47 @@ public class Heatmap implements Observable {
             throw new IllegalArgumentException("String cannot be null");
         }
         if (!maps.stream().map(Map::getName).anyMatch(name -> name.equals(string))) {
-            throw new IllegalArgumentException("Map does not exist: " + string);
+            throw new NoSuchElementException("Map does not exist: " + string);
         }
         return maps.stream().filter(m -> m.getName().equals(string)).findFirst().get();
     }
 
     public Team getTeam(String name) {
-        System.out.println("Searching for team:" + name);
-        return teams.stream().filter(t -> t.getName().equals(name)).findFirst().get();
+        // System.out.println("Searching for team:" + name);
+        if (name == null) {
+            throw new IllegalArgumentException("String cannot be null");
+        }
+        return teams.stream().filter(t -> t.getName().equals(name)).findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Team does not exist: " + name));
     }
 
-    public Player getPlayer(String string) {
-        return teams.stream().filter(t -> t.getPlayers().stream().anyMatch(p -> p.getName().equals(string)))
-                .findFirst().get().getPlayers().stream().filter(p -> p.getName().equals(string)).findFirst().get();
+    public Player getPlayer(String playerName, String teamName) {
+        return teams.stream().filter(t -> t.getName().equals(teamName)).findFirst().orElseThrow(
+                () -> new NoSuchElementException("Team does not exist: " + teamName))
+                .getPlayers().stream()
+                .filter(p -> p.getName().equals(playerName)).findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Player does not exist: " + playerName));
     }
 
     public MatchType getMatchType(String string) {
+        if (string == null) {
+            throw new IllegalArgumentException("String cannot be null");
+        }
         if (matchTypes.stream().filter(m -> m.getName().equals(string)).findFirst().isPresent()) {
             return matchTypes.stream().filter(m -> m.getName().equals(string)).findFirst().get();
         } else {
-            throw new IllegalArgumentException("MatchType was not found");
+            throw new NoSuchElementException("MatchType was not found");
         }
     }
 
-    public void addMap(String mapName, String fileName) throws FileNotFoundException {
-        addMap(new Map(mapName, fileName));
-    }
-
     public void addTeam(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Team cannot be null");
+        }
+        // Check if team with same name exists
+        if (teams.stream().map(Team::getName).anyMatch(name1 -> name1.equals(name))) {
+            throw new IllegalArgumentException("Team name already exists");
+        }
         addTeam(new Team(name));
     }
 
@@ -421,10 +464,20 @@ public class Heatmap implements Observable {
     }
 
     private void addObjective(ObjectivePoint objectivePoint) {
+        if (objectivePoint == null) {
+            throw new IllegalArgumentException("Objective point cannot be null");
+        }
         selectedMap.addObjectivePoint(objectivePoint);
     }
 
     public void addMatchType(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("MatchType cannot be null");
+        }
+        // Check if matchType with same name exists
+        if (matchTypes.stream().map(MatchType::getName).anyMatch(name1 -> name1.equals(name))) {
+            throw new IllegalArgumentException("MatchType name already exists");
+        }
         addMatchType(new MatchType(name));
     }
 
@@ -433,14 +486,6 @@ public class Heatmap implements Observable {
             throw new IllegalStateException("No team selected");
         }
         selectedTeam.addPlayer(new Player(name));
-    }
-
-    public void deleteMap(String name) {
-        if (maps.stream().filter(m -> m.getName().equals(name)).findFirst().isPresent()) {
-            maps.remove(maps.stream().filter(m -> m.getName().equals(name)).findFirst().get());
-        } else {
-            throw new IllegalArgumentException("Map was not found");
-        }
     }
 
 }

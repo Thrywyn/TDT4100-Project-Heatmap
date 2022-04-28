@@ -96,6 +96,8 @@ public class HeatmapController {
     private Slider sliderPlayerRadius;
     @FXML
     private Slider sliderObjectiveRadius;
+    @FXML
+    private Slider sliderAlphaValue;
 
     // Text Point Information
     @FXML
@@ -153,6 +155,9 @@ public class HeatmapController {
     private Scene scene;
     private Stage stage;
 
+    // Misc
+    private double alphaToApproach = 0.75;
+
     @FXML
     public void initialize() {
 
@@ -162,6 +167,7 @@ public class HeatmapController {
         // Image
         setDefaultImage();
         // addImageEvents();
+        updateImageInformation();
 
         // Canvas
         updateCanvasPaneSize();
@@ -228,6 +234,10 @@ public class HeatmapController {
         });
         sliderObjectiveRadius.valueProperty().addListener((observable, oldValue, newValue) -> {
             objectivePointRadius = newValue.doubleValue();
+            refreshCanvasDrawings();
+        });
+        sliderAlphaValue.valueProperty().addListener((observable, oldValue, newValue) -> {
+            alphaToApproach = newValue.doubleValue();
             refreshCanvasDrawings();
         });
     }
@@ -482,12 +492,7 @@ public class HeatmapController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    if (item.getPlayer() == null) {
-                        setText("(" + Math.round(item.getX()) + "," + Math.round(item.getY()) + ")");
-                    } else {
-                        setText(item.getPlayer().getName() + "(" + Math.round(item.getX()) + ","
-                                + Math.round(item.getY()) + ")");
-                    }
+                    setText("(" + Math.round(item.getX()) + "," + Math.round(item.getY()) + ")");
                 }
             }
         });
@@ -682,7 +687,7 @@ public class HeatmapController {
         double overLapAmount = heatmap.calculateMaxAmountOfOverlappingLayers(imageBoundWidth, imageBoundHeight,
                 playerPointRadius);
         // System.out.println("Max overlap amount:" + overLapAmount);
-        double calculatedAlpha = heatmap.calculateAlphaValuesFromMaxOverlap(overLapAmount);
+        double calculatedAlpha = heatmap.calculateAlphaValuesFromMaxOverlap(overLapAmount, alphaToApproach);
         // System.out.println("Alpha value: " + calculatedAlpha);
         playerPointColor = Color.rgb(255, 0, 0, calculatedAlpha);
     }
@@ -718,6 +723,7 @@ public class HeatmapController {
     private void setDefaultImage() {
         imageDisplay.setImage(imageNode);
         heatmap.setSelectedMap("Bazaar");
+        reSetImageNode();
     }
 
     private void updateImageInformation() {

@@ -1,6 +1,7 @@
 package Heatmap;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -104,202 +105,384 @@ public class HeatmapTest {
 		heatmap.selectClosestPlayerPointInRadius(200.0, 200.0, 2.0, map.getWidth(), map.getHeight());
 		assertNull(heatmap.getSelectedPlayerDefencePoint());
 
-		// TODO: assert scenario
-	}
-
-	@Test
-	public void shouldGetObjectivePointsFromSelection() {
-		ArrayList<ObjectivePoint> actualValue = heatmap.getObjectivePointsFromSelection();
-
-		// TODO: assert scenario
 	}
 
 	@Test
 	public void shouldGetPlayerDefencePointMapAbsToRel() {
-		// TODO: initialize args
-		double canvasWidth;
-		double canvasHeight;
+		double canvasWidth = heatmap.getMap("Bazaar").getWidth();
+		double canvasHeight = heatmap.getMap("Bazaar").getHeight();
+		Team team = new Team("Test team");
+		team.addPlayer(new Player("player"));
+		Map map = heatmap.getMap("Bazaar");
+		heatmap.addTeam(team);
+		heatmap.setEditorTeam(team.getName());
+		heatmap.setEditorMatchType(null);
+
+		Double x = 200.0;
+		Double y = 200.0;
+		ObjectivePoint obj = map.getObjectivePoints().get(0);
+		PlayerDefencePoint pp = new PlayerDefencePoint(map, team, obj, x, y);
+		map.addPlayerDefencePoint(pp);
+		heatmap.setSelectedMap(map.getName());
+		heatmap.setSelectedPlayerDefencePoint(pp);
+		heatmap.setEditorObjectivePoint(obj.getName());
 
 		HashMap<PlayerDefencePoint, PlayerDefencePoint> actualValue = heatmap
-				.getPlayerDefencePointMapAbsToRel(canvasWidth, canvasHeight);
+				.getPlayerDefencePointMapAbsToRel(canvasWidth / 2, canvasHeight / 2);
+		System.out.println(actualValue);
 
-		// TODO: assert scenario
+		// Test functionality
+		assertTrue(actualValue.get(pp).getY().equals(y / 2));
+		assertTrue(actualValue.get(pp).getX().equals(x / 2));
+
+		// Test illegal values
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getPlayerDefencePointMapAbsToRel(0.0, 0.0);
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getPlayerDefencePointMapAbsToRel(-100.0, 0);
+		});
+
 	}
 
 	@Test
-	public void shouldTranslatePointToRelative() {
-		// TODO: initialize args
-		PlayerDefencePoint p;
-		double canvasWidth;
-		double canvasHeight;
+	public void shouldGetRelativeObjectivePoints() throws FileNotFoundException {
+		double canvasWidth = heatmap.getMap("Bazaar").getWidth() / 2;
+		double canvasHeight = heatmap.getMap("Bazaar").getWidth() / 2;
 
-		PlayerDefencePoint actualValue = heatmap.translatePointToRelative(p, canvasWidth, canvasHeight);
+		Map map = new Map("TEST", "bazaar.jpg");
 
-		// TODO: assert scenario
-	}
+		ObjectivePoint obj1 = new ObjectivePoint(map, 100.0, 100.0, "obj1");
+		ObjectivePoint obj2 = new ObjectivePoint(map, 200.0, 200.0, "obj2");
+		ObjectivePoint obj3 = new ObjectivePoint(map, 300.0, 300.0, "obj3");
 
-	@Test
-	public void shouldGetRelativeObjectivePoints() {
-		// TODO: initialize args
-		double canvasWidth;
-		double canvasHeight;
+		map.addObjectivePoint(obj1);
+		map.addObjectivePoint(obj2);
+		map.addObjectivePoint(obj3);
+		heatmap.addMap(map);
+		heatmap.setSelectedMap("TEST");
 
 		ArrayList<ObjectivePoint> actualValue = heatmap.getRelativeObjectivePoints(canvasWidth, canvasHeight);
 
-		// TODO: assert scenario
+		// Test translation
+		assertTrue(actualValue.stream().filter(obj -> obj.getName().equals("obj1")).findAny().get()
+				.getX() == obj1.getX() / 2);
+		assertTrue(actualValue.stream().filter(obj -> obj.getName().equals("obj2")).findAny().get()
+				.getX() == obj2.getX() / 2);
+		assertTrue(actualValue.stream().filter(obj -> obj.getName().equals("obj3")).findAny().get()
+				.getX() == obj3.getX() / 2);
+
+		// Test that it returns all objective points
+		heatmap.setEditorObjectivePoint(null);
+		assertTrue(heatmap.getRelativeObjectivePoints(canvasWidth, canvasHeight).size() == map.getObjectivePoints()
+				.size());
+
+		// Test illegal values
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getRelativeObjectivePoints(0.0, 0.0);
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getRelativeObjectivePoints(-100.0, 0);
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getRelativeObjectivePoints(0.0, -100.0);
+		});
+
 	}
 
 	@Test
-	public void shouldCalculateMaxAmountOfOverlappingLayers() {
-		// TODO: initialize args
-		double canvasWidth;
-		double canvasHeight;
-		double circleRadius;
+	public void shouldCalculateMaxAmountOfOverlappingLayers() throws FileNotFoundException {
+		Team team = new Team("team");
+		Player player = new Player("player");
+		team.addPlayer(player);
+		Map map = new Map("TEST", "bazaar.jpg");
+		ObjectivePoint obj = new ObjectivePoint(map, 50.0, 50.0, "obj");
+		map.addObjectivePoint(obj);
+		MatchType matchType = heatmap.getMatchType("VRML");
+		PlayerDefencePoint pp1 = new PlayerDefencePoint(matchType, map, team, player, obj, 100.0, 100.0);
+		heatmap.addMap(map);
+		heatmap.setSelectedMap(map.getName());
 
-		double actualValue = heatmap.calculateMaxAmountOfOverlappingLayers(canvasWidth, canvasHeight, circleRadius);
+		// Test empty map
+		double actualValue = heatmap.calculateMaxAmountOfOverlappingLayers(map.getWidth(), map.getHeight(), 5.0);
+		assertEquals(0, actualValue);
 
-		// TODO: assert scenario
+		map.addPlayerDefencePoint(pp1);
+		// Test one point
+		actualValue = heatmap.calculateMaxAmountOfOverlappingLayers(map.getWidth(), map.getHeight(), 5.0);
+		assertEquals(1, actualValue);
+
+		PlayerDefencePoint pp2 = new PlayerDefencePoint(matchType, map, team, player, obj, 209.0, 200.0);
+		map.addPlayerDefencePoint(pp2);
+		PlayerDefencePoint pp3 = new PlayerDefencePoint(matchType, map, team, player, obj, 200.0, 200.0);
+		map.addPlayerDefencePoint(pp3);
+		// Test two points
+		actualValue = heatmap.calculateMaxAmountOfOverlappingLayers(map.getWidth(), map.getHeight(), 5.0);
+		assertEquals(2.0, actualValue);
+
+		// Test three points
+		PlayerDefencePoint pp4 = new PlayerDefencePoint(matchType, map, team, player, obj, 205.0, 200.0);
+		map.addPlayerDefencePoint(pp4);
+		actualValue = heatmap.calculateMaxAmountOfOverlappingLayers(map.getWidth(), map.getHeight(), 5.0);
+		assertEquals(3.0, actualValue);
+
+		PlayerDefencePoint pp5 = new PlayerDefencePoint(matchType, map, team, player, obj, 195.0, 200.0);
+
+		map.addPlayerDefencePoint(pp5);
+		actualValue = heatmap.calculateMaxAmountOfOverlappingLayers(map.getWidth(), map.getHeight(), 5.0);
+		assertEquals(3.0, actualValue);
+
 	}
 
 	@Test
 	public void shouldCalculateAlphaValuesFromMaxOverlap() {
-		// TODO: initialize args
-		double maxLayersOverlapping;
+		// Test empty map
+		double actualValue = heatmap.calculateAlphaValuesFromMaxOverlap(0, 0.75);
+		assertEquals(0.75, actualValue);
 
-		double actualValue = heatmap.calculateAlphaValuesFromMaxOverlap(maxLayersOverlapping);
+		// Test one point
+		actualValue = heatmap.calculateAlphaValuesFromMaxOverlap(1, 0.75);
+		assertEquals(0.75, actualValue);
 
-		// TODO: assert scenario
-	}
-
-	@Test
-	public void shouldAddMap() {
-		// TODO: initialize args
-		Map map;
-
-		heatmap.addMap(map);
-
-		// TODO: assert scenario
+		// Test two points
+		actualValue = heatmap.calculateAlphaValuesFromMaxOverlap(2, 0.75);
+		assertEquals(0.5, actualValue);
 	}
 
 	@Test
 	public void shouldAddTeam() {
-		// TODO: initialize args
-		Team team;
+		Team team = new Team("team");
+		// Add team
+		assertDoesNotThrow(() -> {
+			heatmap.addTeam(team);
+		});
+		assertTrue(heatmap.getTeams().contains(team));
 
-		heatmap.addTeam(team);
-
-		// TODO: assert scenario
+		// Add same team twice
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addTeam(team);
+		});
+		// Add null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addTeam((Team) null);
+		});
+		// Add team with same name
+		Team team2 = new Team("team");
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addTeam(team2);
+		});
 	}
 
 	@Test
 	public void shouldAddMatchType() {
-		// TODO: initialize args
-		MatchType matchType;
+		MatchType matchType = new MatchType("TEST");
 
-		heatmap.addMatchType(matchType);
+		// Add match type
+		assertDoesNotThrow(() -> {
+			heatmap.addMatchType(matchType);
+		});
+		assertTrue(heatmap.getMatchTypes().contains(matchType));
 
-		// TODO: assert scenario
+		// Null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addMatchType((MatchType) null);
+		});
+		// Add same match type twice
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addMatchType(matchType);
+		});
+
 	}
 
 	@Test
-	public void shouldGetMap() {
-		// TODO: initialize args
-		String string;
+	public void shouldGetMap() throws FileNotFoundException {
+		Map map = new Map("TEST", "bazaar.jpg");
+		heatmap.addMap(map);
 
-		Map actualValue = heatmap.getMap(string);
+		// Test that it returns the correct map
+		Map actualValue = heatmap.getMap("TEST");
+		assertEquals(map, actualValue);
 
-		// TODO: assert scenario
+		// Test with map that does not exist
+		assertThrows(NoSuchElementException.class, () -> {
+			heatmap.getMap("TEST2");
+		});
+
+		// Test null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getMap(null);
+		});
 	}
 
 	@Test
 	public void shouldGetTeam() {
-		// TODO: initialize args
-		String name;
+		String name = "TEST";
+		Team team = new Team(name);
+		heatmap.addTeam(team);
 
 		Team actualValue = heatmap.getTeam(name);
+		assertTrue(actualValue.equals(team));
 
-		// TODO: assert scenario
+		// Test with team that does not exist
+		assertThrows(NoSuchElementException.class, () -> {
+			heatmap.getTeam("TEST2");
+		});
+		// Test null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getTeam(null);
+		});
 	}
 
 	@Test
 	public void shouldGetPlayer() {
 		// TODO: initialize args
-		String string;
+		String name = "TEST";
+		Player player = new Player(name);
+		Team team = new Team("team");
+		team.addPlayer(player);
+		heatmap.addTeam(team);
 
-		Player actualValue = heatmap.getPlayer(string);
+		Player actualValue = heatmap.getPlayer(name, team.getName());
+		// Test that it returns the correct player
+		assertTrue(actualValue.equals(player));
 
-		// TODO: assert scenario
+		// Test with player that does not exist
+		assertThrows(NoSuchElementException.class, () -> {
+			heatmap.getPlayer("TEST2", team.getName());
+		});
+
+		// Test with team that does not exist
+		assertThrows(NoSuchElementException.class, () -> {
+			heatmap.getPlayer(name, "teamthatdoesnotexist");
+		});
 	}
 
 	@Test
 	public void shouldGetMatchType() {
 		// TODO: initialize args
-		String string;
+		String name = "TEST";
+		MatchType matchType = new MatchType(name);
+		heatmap.addMatchType(matchType);
 
-		MatchType actualValue = heatmap.getMatchType(string);
+		MatchType actualValue = heatmap.getMatchType(name);
+		assertEquals(matchType, actualValue);
 
-		// TODO: assert scenario
+		// Test with match type that does not exist
+		assertThrows(NoSuchElementException.class, () -> {
+			heatmap.getMatchType("TEST2");
+		});
+		// Test null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.getMatchType(null);
+		});
+		// Test lowercase, should seperate between them
+		assertThrows(NoSuchElementException.class, () -> {
+			heatmap.getMatchType(name.toLowerCase());
+		});
 	}
 
 	@Test
-	public void shouldAddMap() {
-		// TODO: initialize args
-		String mapName;
-		String fileName;
-
-		heatmap.addMap(mapName, fileName);
-
-		// TODO: assert scenario
-	}
-
-	@Test
-	public void shouldAddTeam() {
-		// TODO: initialize args
-		String name;
-
+	public void shouldAddTeamString() {
+		String name = "test team";
+		// Add team
 		heatmap.addTeam(name);
-
-		// TODO: assert scenario
+		// Check if contains team with name
+		assertTrue(heatmap.getTeams().stream().anyMatch(team -> team.getName().equals(name)));
+		// Add team with same name
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addTeam(name);
+		});
+		// Add null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addTeam((String) null);
+		});
 	}
 
 	@Test
 	public void shouldAddObjective() {
 		// TODO: initialize args
-		String name;
-		String pos;
+		String name = "TEST";
+		String pos = "10,10";
 
-		heatmap.addObjective(name, pos);
-
-		// TODO: assert scenario
+		assertDoesNotThrow(() -> {
+			heatmap.addObjective(name, pos);
+		});
+		// Test add obj with same name
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, pos);
+		});
+		// Test add obj with same position but different name
+		assertDoesNotThrow(() -> {
+			heatmap.addObjective(name + "2", pos);
+		});
+		// Test add obj with wrong position format
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "10,10,10");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "10");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "10.10");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "asd,sd");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "10,a");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "10,10,a");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "10,10a");
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective(name, "asd");
+		});
+		// Test null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addObjective((String) null, pos);
+		});
 	}
 
 	@Test
-	public void shouldAddMatchType() {
-		// TODO: initialize args
-		String name;
+	public void shouldAddMatchTypeString() {
 
-		heatmap.addMatchType(name);
-
-		// TODO: assert scenario
+		String name = "TEST";
+		assertDoesNotThrow(() -> {
+			heatmap.addMatchType(name);
+		});
+		// Test add match type with same name
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addMatchType(name);
+		});
+		// Test add match type with same name but different case
+		assertDoesNotThrow(() -> {
+			heatmap.addMatchType(name.toLowerCase());
+		});
+		// Test add null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addMatchType((String) null);
+		});
 	}
 
 	@Test
 	public void shouldAddPlayerToSelectedTeam() {
-		// TODO: initialize args
-		String name;
-
+		String name = "TEST";
+		Team team = new Team("team");
+		heatmap.addTeam(team);
+		heatmap.setEditorTeam(team.getName());
 		heatmap.addPlayerToSelectedTeam(name);
-
-		// TODO: assert scenario
-	}
-
-	@Test
-	public void shouldDeleteMap() {
-		// TODO: initialize args
-		String name;
-
-		heatmap.deleteMap(name);
-
-		// TODO: assert scenario
+		// Check if contains player with name
+		assertTrue(team.getPlayers().stream().anyMatch(player -> player.getName().equals(name)));
+		// Add player with same name
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addPlayerToSelectedTeam(name);
+		});
+		// Add null
+		assertThrows(IllegalArgumentException.class, () -> {
+			heatmap.addPlayerToSelectedTeam((String) null);
+		});
 	}
 }

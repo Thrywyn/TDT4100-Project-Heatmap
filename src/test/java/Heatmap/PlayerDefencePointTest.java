@@ -1,5 +1,6 @@
 package Heatmap;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -82,6 +83,11 @@ public class PlayerDefencePointTest {
 		map2 = new Map("Bazaar2", "bazaar.jpg");
 		assertThrows(IllegalArgumentException.class, () -> {
 			PlayerDefencePoint pp = new PlayerDefencePoint(matchType, map2, team, player, obj, 100.0, 100.0);
+		});
+
+		// Test create playerDefencePoint with team and null player
+		assertDoesNotThrow(() -> {
+			PlayerDefencePoint pp = new PlayerDefencePoint(matchType, map, team, null, obj, 100.0, 100.0);
 		});
 
 	}

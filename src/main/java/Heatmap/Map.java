@@ -30,6 +30,9 @@ public class Map implements ChoiceBoxToStringInterface {
         if (imgFileName.isEmpty()) {
             throw new IllegalArgumentException("Image file name cannot be empty");
         }
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
 
         this.name = name;
         this.imgFileName = imgFileName;
@@ -123,6 +126,12 @@ public class Map implements ChoiceBoxToStringInterface {
         if (getObjectivePoints().stream().map(ObjectivePoint::getName)
                 .anyMatch(name -> name.equals(objectivePoint.getName()))) {
             throw new IllegalArgumentException("ObjectivePoint name already exists");
+        }
+        if (objectivePoint.getX() < 0 || objectivePoint.getX() > width) {
+            throw new IllegalArgumentException("ObjectivePoint x coordinate is out of bounds");
+        }
+        if (objectivePoint.getY() < 0 || objectivePoint.getY() > height) {
+            throw new IllegalArgumentException("ObjectivePoint y coordinate is out of bounds");
         }
         this.objectivePoints.add(objectivePoint);
     }

@@ -171,7 +171,8 @@ public class ImportExporter implements IReadWrite {
                             playerDefencePoint.setDateCreated(
                                     LocalDateTime.parse(playerDefencePointInfo[5]));
                             if (!playerDefencePointInfo[6].equals("null")) {
-                                playerDefencePoint.setPlayer(heatmap.getPlayer(playerDefencePointInfo[6]));
+                                playerDefencePoint.setPlayer(
+                                        heatmap.getPlayer(playerDefencePointInfo[6], playerDefencePointInfo[1]));
                             }
                             if (!playerDefencePointInfo[7].equals("null")) {
                                 playerDefencePoint.setMatchType(heatmap.getMatchType(playerDefencePointInfo[7]));
