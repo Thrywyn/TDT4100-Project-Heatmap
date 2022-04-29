@@ -1,5 +1,6 @@
 package Heatmap;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +22,20 @@ public class Heatmap {
     private ObjectivePoint selectedObjectivePoint;
 
     private PlayerDefencePoint selectedPlayerDefencePoint;
+
+    public static void main(String[] args) {
+
+        Class classobj = Heatmap.class;
+        Method[] methods = classobj.getMethods();
+
+        // get the name of every method present in the list
+        for (Method method : methods) {
+
+            String MethodName = method.getName();
+            System.out.println("-"
+                    + MethodName);
+        }
+    }
 
     public Heatmap() {
 
