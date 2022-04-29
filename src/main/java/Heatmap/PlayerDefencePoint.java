@@ -85,20 +85,20 @@ public class PlayerDefencePoint extends Point {
         PlayerDefencePoint other = (PlayerDefencePoint) obj;
 
         // Custom code
-        if (x == null) {
-            if (other.x != null)
+        if (getX() == null) {
+            if (other.getX() != null)
                 return false;
-        } else if (!x.equals(other.x))
+        } else if (!getX().equals(other.getX()))
             return false;
-        if (y == null) {
-            if (other.y != null)
+        if (getY() == null) {
+            if (other.getY() != null)
                 return false;
-        } else if (!y.equals(other.y))
+        } else if (!getY().equals(other.getY()))
             return false;
-        if (map == null) {
-            if (other.map != null)
+        if (getMap() == null) {
+            if (other.getMap() != null)
                 return false;
-        } else if (!map.getName().equals(other.map.getName()))
+        } else if (!getMap().getName().equals(other.getMap().getName()))
             return false;
 
         if (matchType == null) {
