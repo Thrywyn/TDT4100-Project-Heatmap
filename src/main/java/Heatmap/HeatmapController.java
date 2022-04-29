@@ -252,7 +252,7 @@ public class HeatmapController {
 
             TextInputDialog dialog2 = new TextInputDialog("Objective Position");
             dialog2.setTitle("New Objective");
-            dialog2.setHeaderText("Enter a raw position for the new objective in format x,y");
+            dialog2.setHeaderText("Enter a raw whole number position for the new objective in format x,y");
             dialog2.setContentText("Objective Position:");
 
             Optional<String> positionObjective = dialog2.showAndWait();
