@@ -165,9 +165,15 @@ public class ImportExporterTest {
 	@DisplayName("Test writing to file with invalid chars in name")
 	public void shouldThrowExceptionWhenWritingToFileWithInvalidCharsInName() {
 		ImportExporter importExporter = new ImportExporter();
+		// Test with name including /
 		assertThrows(IllegalArgumentException.class, () -> {
 			Heatmap heatmap = getFilledHeatmap();
 			importExporter.write("test_file_written/", heatmap);
+		});
+		// Test with name including other chars
+		assertThrows(IllegalArgumentException.class, () -> {
+			Heatmap heatmap = getFilledHeatmap();
+			importExporter.write("test_fil:{}e_wr/<>:/|?*itten:", heatmap);
 		});
 	}
 
