@@ -115,8 +115,8 @@ public class HeatmapTest {
 		team.addPlayer(new Player("player"));
 		Map map = heatmap.getMap("Bazaar");
 		heatmap.addTeam(team);
-		heatmap.setEditorTeam(team.getName());
-		heatmap.setEditorMatchType(null);
+		heatmap.setSelectedTeam(team.getName());
+		heatmap.setSelectedMatchType(null);
 
 		Double x = 200.0;
 		Double y = 200.0;
@@ -125,7 +125,7 @@ public class HeatmapTest {
 		map.addPlayerDefencePoint(pp);
 		heatmap.setSelectedMap(map.getName());
 		heatmap.setSelectedPlayerDefencePoint(pp);
-		heatmap.setEditorObjectivePoint(obj.getName());
+		heatmap.setSelectedObjectivePoint(obj.getName());
 
 		HashMap<PlayerDefencePoint, PlayerDefencePoint> actualValue = heatmap
 				.getPlayerDefencePointMapAbsToRel(canvasWidth / 2, canvasHeight / 2);
@@ -173,7 +173,7 @@ public class HeatmapTest {
 				.getX() == obj3.getX() / 2);
 
 		// Test that it returns all objective points
-		heatmap.setEditorObjectivePoint(null);
+		heatmap.setSelectedObjectivePoint(null);
 		assertTrue(heatmap.getRelativeObjectivePoints(canvasWidth, canvasHeight).size() == map.getObjectivePoints()
 				.size());
 
@@ -469,7 +469,7 @@ public class HeatmapTest {
 		String name = "TEST";
 		Team team = new Team("team");
 		heatmap.addTeam(team);
-		heatmap.setEditorTeam(team.getName());
+		heatmap.setSelectedTeam(team.getName());
 		heatmap.addPlayerToSelectedTeam(name);
 		// Check if contains player with name
 		assertTrue(team.getPlayers().stream().anyMatch(player -> player.getName().equals(name)));

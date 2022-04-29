@@ -198,7 +198,7 @@ public class Heatmap {
         }
     }
 
-    public void setEditorMatchType(String matchTypeName) {
+    public void setSelectedMatchType(String matchTypeName) {
         if (matchTypeName == null || matchTypeName == "None") {
             this.selectedMatchType = null;
         } else {
@@ -209,7 +209,7 @@ public class Heatmap {
         }
     }
 
-    public void setEditorSelectedPlayer(String playerName) {
+    public void setSelectedPlayer(String playerName) {
         if (playerName == null || playerName == "None") {
             this.selectedPlayer = null;
         } else {
@@ -220,7 +220,7 @@ public class Heatmap {
         }
     }
 
-    public void setEditorTeam(String teamName) {
+    public void setSelectedTeam(String teamName) {
         if (teamName == null || teamName == "None") {
             this.selectedTeam = null;
         } else {
@@ -231,7 +231,7 @@ public class Heatmap {
         }
     }
 
-    public void setEditorObjectivePoint(String objectivePointName) {
+    public void setSelectedObjectivePoint(String objectivePointName) {
         if (objectivePointName == null || objectivePointName == "None") {
             this.selectedObjectivePoint = null;
         } else {

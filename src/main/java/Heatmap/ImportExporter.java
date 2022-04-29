@@ -181,7 +181,7 @@ public class ImportExporter implements IReadWrite {
                 heatmap.setSelectedMap(heatmap.getMaps().get(0).getName());
             }
             if (!heatmap.getMatchTypes().isEmpty()) {
-                heatmap.setEditorMatchType(heatmap.getMatchTypes().get(0).getName());
+                heatmap.setSelectedMatchType(heatmap.getMatchTypes().get(0).getName());
             }
 
             return heatmap;

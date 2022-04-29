@@ -803,27 +803,27 @@ public class HeatmapController {
 
         matchChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Match: " + newVal);
-            heatmap.setEditorMatchType(newVal);
+            heatmap.setSelectedMatchType(newVal);
             refreshCanvasDrawings();
             refreshListView();
         });
 
         teamChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Team: " + newVal);
-            heatmap.setEditorTeam(newVal);
+            heatmap.setSelectedTeam(newVal);
             refillPlayerChoiceBox();
             refreshCanvasDrawings();
             refreshListView();
         });
         objectiveChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Objective: " + newVal);
-            heatmap.setEditorObjectivePoint(newVal);
+            heatmap.setSelectedObjectivePoint(newVal);
             refreshCanvasDrawings();
             refreshListView();
         });
         playerChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println("Editor Player: " + newVal);
-            heatmap.setEditorSelectedPlayer(newVal);
+            heatmap.setSelectedPlayer(newVal);
             refreshCanvasDrawings();
             refreshListView();
         });
