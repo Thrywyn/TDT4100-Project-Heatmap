@@ -455,7 +455,7 @@ public class HeatmapController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.contentTextProperty().set(e.getMessage());
         alert.show();
-        e.printStackTrace();
+        //e.printStackTrace();
 
     }
 
@@ -463,7 +463,7 @@ public class HeatmapController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.contentTextProperty().set(explanation + "\n" + e.getMessage());
         alert.show();
-        e.printStackTrace();
+        //e.printStackTrace();
 
     }
 
