@@ -67,7 +67,14 @@ public class Heatmap {
     }
 
     public void setSelectedPlayerDefencePoint(PlayerDefencePoint playerDefencePoint) {
-        this.selectedPlayerDefencePoint = playerDefencePoint;
+        // Check if map contains playerDefencePoint
+        if (playerDefencePoint == null) {
+            this.selectedPlayerDefencePoint = null;
+        } else if (getSelectedMap().getPlayerDefencePoints().contains(playerDefencePoint)) {
+            this.selectedPlayerDefencePoint = playerDefencePoint;
+        } else {
+            throw new NoSuchElementException("PlayerDefencePoint not found in selected map");
+        }
     }
 
     public void deleteSelectedPlayerDefencePoint() {
@@ -77,7 +84,12 @@ public class Heatmap {
     }
 
     public void setSelectedPlayer(Player player) {
-        this.selectedPlayer = player;
+        // Check if selected team contains player
+        if (selectedTeam.getPlayers().contains(player)) {
+            this.selectedPlayer = player;
+        } else {
+            throw new NoSuchElementException("Player not found in selected team");
+        }
     }
 
     public void selectClosestPlayerPointInRadius(double x, double y, double radius, double canvasWidth,
@@ -232,6 +244,15 @@ public class Heatmap {
 
     // Add Player point to the map selected
     public void addPointToSelectedMap(double x, double y) {
+        if (selectedMap == null) {
+            throw new IllegalStateException("No map selected");
+        }
+        if (selectedTeam == null) {
+            throw new IllegalStateException("No team selected");
+        }
+        if (selectedObjectivePoint == null) {
+            throw new IllegalStateException("No objective point selected");
+        }
         selectedMap.addPlayerDefencePoint(new PlayerDefencePoint(selectedMatchType, selectedMap, selectedTeam,
                 selectedPlayer, selectedObjectivePoint, x, y));
     }

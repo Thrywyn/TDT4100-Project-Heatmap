@@ -23,10 +23,6 @@ public class MatchType implements ChoiceBoxToStringInterface {
         return name;
     }
 
-    public void setName(String type) {
-        this.name = type;
-    }
-
     @Override
     public String getChoiceBoxString() {
         return name;

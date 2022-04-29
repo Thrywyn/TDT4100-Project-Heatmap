@@ -66,10 +66,10 @@ public class HeatmapTest {
 		map.addObjectivePoint(obj);
 		PlayerDefencePoint playerDefencePoint = new PlayerDefencePoint(matchType, map, team, player, obj, x, y);
 		heatmap.addMap(map);
+		map.addPlayerDefencePoint(playerDefencePoint);
 
 		heatmap.setSelectedMap(map.getName());
 		heatmap.setSelectedPlayerDefencePoint(playerDefencePoint);
-		heatmap.getSelectedMap().addPlayerDefencePoint(playerDefencePoint);
 
 		assertTrue(heatmap.getSelectedPlayerDefencePoint().equals(playerDefencePoint));
 		heatmap.deleteSelectedPlayerDefencePoint();

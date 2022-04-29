@@ -125,11 +125,19 @@ public class PlayerDefencePoint extends Point {
     }
 
     public void setPlayer(Player player) {
+        // Check if team contains player
+        if (team != null) {
+            if (!team.getPlayers().contains(player)) {
+                if (player != null) {
+                    throw new IllegalArgumentException("Player must be on the team assigned to point");
+                }
+            }
+        }
         this.player = (Player) player;
     }
 
-    public void setMatchType(MatchType matchType2) {
-        this.matchType = matchType2;
+    protected void setMatchType(MatchType matchType) {
+        this.matchType = matchType;
     }
 
 }
