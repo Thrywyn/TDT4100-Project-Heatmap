@@ -9,7 +9,7 @@ public class ObjectivePoint extends Point implements ChoiceBoxToStringInterface 
         if (name == null) {
             throw new IllegalArgumentException("Objective name cannot be null");
         }
-        if (!Contains.onlyOneorMoreAlphaNumericSpace(name)) {
+        if (!Contains.onlyOneorMoreAlphaNumericSpaceAndNoWhitespaceAtStartAndEnd(name)) {
             throw new IllegalArgumentException("Name must be only one or more alphanumeric characters");
         }
         this.name = name;

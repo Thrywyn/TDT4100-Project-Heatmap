@@ -1,6 +1,6 @@
 package Heatmap;
 
-public abstract class Point {
+public class Point {
 
     private Map map;
 
