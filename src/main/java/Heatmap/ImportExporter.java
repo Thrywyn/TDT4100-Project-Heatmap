@@ -10,6 +10,31 @@ import java.util.Scanner;
 public class ImportExporter implements IReadWrite {
 
     public void write(String fileName, Heatmap heatmap) throws FileNotFoundException {
+
+        if (fileName == null) {
+            throw new IllegalArgumentException("File name cannot be null");
+        }
+        if (fileName.isEmpty()) {
+            throw new IllegalArgumentException("File name cannot be empty");
+        }
+        if (heatmap == null) {
+            throw new IllegalArgumentException("Heatmap cannot be null");
+        }
+        // Check if filename contains illegal characters /<>:"/\|?*
+        if (fileName.contains("/") || fileName.contains("<") || fileName.contains(">")
+                || fileName.contains(":") || fileName.contains("\"") || fileName.contains("\\")
+                || fileName.contains("|") || fileName.contains("?") || fileName.contains("*")) {
+            throw new IllegalArgumentException("File name cannot contain any of the following characters: /<>:\"\\|?*");
+        }
+        // Check if trailing whitespace
+        if (fileName.endsWith(" ")) {
+            throw new IllegalArgumentException("File name cannot end with a space");
+        }
+        // Check if name starts with whitespace
+        if (fileName.startsWith(" ")) {
+            throw new IllegalArgumentException("File name cannot start with a space");
+        }
+
         try (PrintWriter writer = new PrintWriter(getFile(fileName))) {
 
             writer.println("[Maps]");
