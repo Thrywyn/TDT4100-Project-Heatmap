@@ -23,20 +23,6 @@ public class Heatmap {
 
     private PlayerDefencePoint selectedPlayerDefencePoint;
 
-    public static void main(String[] args) {
-
-        Class classobj = Heatmap.class;
-        Method[] methods = classobj.getMethods();
-
-        // get the name of every method present in the list
-        for (Method method : methods) {
-
-            String MethodName = method.getName();
-            System.out.println("-"
-                    + MethodName);
-        }
-    }
-
     public Heatmap() {
 
         createMaps();
