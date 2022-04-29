@@ -18,8 +18,8 @@ public class Map implements ChoiceBoxToStringInterface {
     private double width;
     private double height;
 
-    ArrayList<PlayerDefencePoint> playerDefencePoints = new ArrayList<>();
-    ArrayList<ObjectivePoint> objectivePoints = new ArrayList<>();
+    private ArrayList<PlayerDefencePoint> playerDefencePoints = new ArrayList<>();
+    private ArrayList<ObjectivePoint> objectivePoints = new ArrayList<>();
 
     public Map(String name, String imgFileName) throws FileNotFoundException {
         checkIfValidName(name);

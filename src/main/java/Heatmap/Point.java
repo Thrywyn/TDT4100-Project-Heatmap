@@ -2,10 +2,10 @@ package Heatmap;
 
 public class Point {
 
-    Map map;
+    private Map map;
 
-    Double x;
-    Double y;
+    private Double x;
+    private Double y;
 
     public Point(Map map, Double x, Double y) {
         if (map == null) {

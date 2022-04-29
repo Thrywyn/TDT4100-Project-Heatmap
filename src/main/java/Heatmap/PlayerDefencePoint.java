@@ -2,10 +2,10 @@ package Heatmap;
 
 public class PlayerDefencePoint extends Point {
 
-    MatchType matchType;
-    Team team;
-    Player player;
-    ObjectivePoint objectivePoint;
+    private MatchType matchType;
+    private Team team;
+    private Player player;
+    private ObjectivePoint objectivePoint;
 
     public PlayerDefencePoint(Map map, Team team, ObjectivePoint obj, Double x, Double y) {
         super(map, x, y);
